@@ -5,6 +5,7 @@ from nltk.tokenize import word_tokenize
 from bs4 import BeautifulSoup
 from pathlib import Path
 from collections import defaultdict
+from json.decoder import JSONDecodeError
 
 def indexing(stem : str, filename : str) -> dict:
     #token : file 
@@ -27,9 +28,8 @@ def mergeDict(d1, d2):
             merged_dict[k].append(v)
 
     #sorting values which is a list object
-    for list in merged_dict.values():
-        for docID in list:
-            docID.sort(key=int)
+    for ls in merged_dict.values():
+        ls.sort()
 
     return merged_dict
 
@@ -68,6 +68,9 @@ def main():
 
     all_file_names = ['a_f.json', 'g_l.json', 'm_s.json', 't_z.json']
 
+    for f in all_file_names:
+        os.remove(f)
+
     for file in files:
         with open(file, 'r') as f:
             data = json.load(f)
@@ -94,26 +97,38 @@ def main():
             
             for i, current_dict in enumerate(sep_dicts):
                 
+                with open(all_file_names[i], 'w+') as infile, open(all_file_names[i], 'w') as outfile:
+                    try:
+                        old_index = json.load(infile)
+                        merged_dict = mergeDict(old_index, current_dict)
+                        json.dump(merged_dict, outfile, indent=4)
+                    except JSONDecodeError:
+                        json.dump(current_dict, outfile, indent=4)
+
+
+                
                 #file name to write to
-                with open(all_file_names[i], "r+") as f:
-                    #getting dict from file
-                    old_index = json.loads(f)
+                # with open(all_file_names[i], 'r') as f:
+                #     #getting dict from file
+                #     old_index = json.load(f)
 
-                    #merging dict
-                    merged_dict = mergeDict(old_index, current_dict)
+                # #merging dict
+                # merged_dict = mergeDict(old_index, current_dict)
 
-                    #writing dict back to file
-                    f.seek(0)
-                    json.dump(merged_dict, f, indent=4)
+                #     #writing dict back to file
+                #     #f.seek(0)
+                    
+                # with open(all_file_names[i], 'w') as f:
+                #     json.dump(merged_dict, f, indent=4)
 
             
     #TODO 
     
-    num_of_docs = 0
+    num_of_docs = len(files)
     num_of_tokens = 0
     file_size = 0
     
-    #MERGE INDEX INTO ONE FILE
+    #Generate stats report for deliverable
     with open('report.txt', 'w') as file:
 
         for name in all_file_names:
@@ -122,9 +137,35 @@ def main():
                 d = json.loads(f)
                 num_of_tokens += len(d.keys())
                 file_size += os.stat(name.st_size) / 1000
+        
+        file.write("Number of Documents: " + str(num_of_docs) +"\n")
+        file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
+        file.write("Total Size: " + str(file_size) + " kb\n")
+    
+    #FIXME: The token doesn't look good. E.g. ''": [
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
+    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0"
+    # ],
                 
 
-    #Generate stats report for deliverable
+    
 
             
         
