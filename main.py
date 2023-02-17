@@ -55,7 +55,6 @@ def seperateDict(dict):
 # import krovetz
 def main():
     
-
     #beginning path
     path  = 'DEV/'
 
@@ -134,9 +133,9 @@ def main():
         for name in all_file_names:
             
             with open(name, "r+") as f:
-                d = json.loads(f)
+                d = json.load(f)
                 num_of_tokens += len(d.keys())
-                file_size += os.stat(name.st_size) / 1000
+                file_size += os.path.getsize(name) / 1000
         
         file.write("Number of Documents: " + str(num_of_docs) +"\n")
         file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
