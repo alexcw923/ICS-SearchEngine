@@ -66,9 +66,10 @@ def main():
     ps = PorterStemmer()
 
     all_file_names = ['a_f.json', 'g_l.json', 'm_s.json', 't_z.json']
-
-    for f in all_file_names:
-        os.remove(f)
+    
+    # UNCOMMENT AFTER FIRST RUN
+    #for f in all_file_names:
+    #   os.remove(f)
 
     for file in files:
         with open(file, 'r') as f:
