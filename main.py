@@ -54,57 +54,74 @@ def seperateDict(dict):
 
 # import krovetz
 def main():
-    
-    #beginning path
-    path  = 'DEV/'
+    try:
+        #beginning path
+        path  = 'DEV/'
 
-    #getting all file names in order to be read n
-    files = [f for f in glob(path + "**/*.json", recursive=True)]
-    
-    #loop thru every file
-    # for each file tokenize, stem token, the create rev index for each file
-    ps = PorterStemmer()
+        #getting all file names in order to be read n
+        files = [f for f in glob(path + "**/*.json", recursive=True)]
+        
+        #loop thru every file
+        # for each file tokenize, stem token, the create rev index for each file
+        ps = PorterStemmer()
 
-    all_file_names = ['a_f.json', 'g_l.json', 'm_s.json', 't_z.json']
-    
-    # UNCOMMENT AFTER FIRST RUN
-    #for f in all_file_names:
-    #   os.remove(f)
+        all_file_names = ['a_f.json', 'g_l.json', 'm_s.json', 't_z.json']
+        
+        # UNCOMMENT AFTER FIRST RUN
+        #for f in all_file_names:
+        #   os.remove(f)
 
-    for file in files:
-        with open(file, 'r') as f:
-            data = json.load(f)
-            content = data['content']
+        for file in files:
+            with open(file, 'r') as f:
+                data = json.load(f)
+                content = data['content']
 
-            soup = BeautifulSoup(content, 'lxml')
-            # FIXME: 
-            text = soup.get_text()
+                soup = BeautifulSoup(content, 'lxml')
+                # FIXME: 
+                text = soup.get_text()
 
-            tokenized = word_tokenize(text)
-            #make sure tokens are lowercase
-            tokenized = [token.lower() for token in tokenized if token not in string.punctuation]
-            #allows stemming to work with lowercase words
-            stemmed = [ps.stem(s, to_lowercase=True) for s in tokenized]
+                tokenized = word_tokenize(text)
+                #make sure tokens are lowercase
+                tokenized = [token.lower() for token in tokenized if token not in string.punctuation]
+                #allows stemming to work with lowercase words
+                stemmed = [ps.stem(s, to_lowercase=True) for s in tokenized]
 
-            #getting partial_index from current html
-            partial_inverted_index = indexing(stemmed, file)
-            #json_data = json.dumps(partial_inverted_index, indent=2)
+                #getting partial_index from current html
+                partial_inverted_index = indexing(stemmed, file)
+                #json_data = json.dumps(partial_inverted_index, indent=2)
 
-            #splitting partial index into 4 term ranges
-            sep_dicts = seperateDict(partial_inverted_index)
+                #splitting partial index into 4 term ranges
+                sep_dicts = seperateDict(partial_inverted_index)
 
-            #write to those files and update dictionary from file and current index
-            
-            for i, current_dict in enumerate(sep_dicts):
+                #write to those files and update dictionary from file and current index
                 
-                with open(all_file_names[i], 'w+') as infile, open(all_file_names[i], 'w') as outfile:
-                    try:
-                        old_index = json.load(infile)
-                        merged_dict = mergeDict(old_index, current_dict)
-                        json.dump(merged_dict, outfile, indent=4)
-                    except JSONDecodeError:
-                        json.dump(current_dict, outfile, indent=4)
+                for i, current_dict in enumerate(sep_dicts):
+                    
+                    with open(all_file_names[i], 'w+') as infile, open(all_file_names[i], 'w') as outfile:
+                        try:
+                            old_index = json.load(infile)
+                            merged_dict = mergeDict(old_index, current_dict)
+                            json.dump(merged_dict, outfile, indent=4)
+                        except JSONDecodeError:
+                            json.dump(current_dict, outfile, indent=4)
+    except KeyboardInterrupt:
+        num_of_docs = len(files)
+        num_of_tokens = 0
+        file_size = 0
+        
+        #Generate stats report for deliverable
+        with open('report.txt', 'w') as file:
 
+            for name in all_file_names:
+                
+                with open(name, "r+") as f:
+                    d = json.load(f)
+                    num_of_tokens += len(d.keys())
+                    file_size += os.path.getsize(name) / 1000
+            
+            file.write("Number of Documents: " + str(num_of_docs) +"\n")
+            file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
+            file.write("Total Size: " + str(file_size) + " kb\n")
 
                 
                 #file name to write to
