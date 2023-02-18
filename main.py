@@ -23,18 +23,21 @@ def getFileName(path):
 #merging two dictionaries
 def mergeDict(d1, d2):
     
-    merged_dict = defaultdict(list)
+    # merged_dict = defaultdict(list)
     
     #merging two dicts
-    for key, value in d1.items():
-        merged_dict[key] += value
     for key, value in d2.items():
-        merged_dict[key] += value
-    #sorting values which is a list object
-    for ls in merged_dict.values():
-        ls.sort()
+        if key not in d1:
+            d1[key] = [value]
+        else:
+            d1[key] += value
+    # for key, value in d2.items():
+    #     merged_dict[key] += value
+    # #sorting values which is a list object
+    # for ls in merged_dict.values():
+    #     ls.sort()
 
-    return merged_dict
+    return d1
 
 #sepearting dictionary into term ranges
 def seperateDict(dict):
