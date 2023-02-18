@@ -21,12 +21,14 @@ def getFileName(path):
     return Path(path).stem
 
 def mergeDict(d1, d2):
-    #merging two dicts
+    
     merged_dict = defaultdict(list)
-    for d in (d1, d2):
-        for k, v in d.items():
-            merged_dict[k].append(v)
-
+    
+    #merging two dicts
+    for key, value in d1.items():
+        merged_dict[key] += value
+    for key, value in d2.items():
+        merged_dict[key] += value
     #sorting values which is a list object
     for ls in merged_dict.values():
         ls.sort()
@@ -35,10 +37,7 @@ def mergeDict(d1, d2):
 
 #sepearting dictionary into term ranges
 def seperateDict(dict):
-    a_f = {}
-    g_l = {}
-    m_s = {}
-    t_z = {}
+    a_f, g_l, m_s, t_z = {}, {}, {}, {}
 
     for k, v in dict.items():
         if k[0] >= 'a' and k[0] <= 'f':
@@ -68,9 +67,12 @@ def main():
         all_file_names = ['a_f.json', 'g_l.json', 'm_s.json', 't_z.json']
         
         # UNCOMMENT AFTER FIRST RUN
-        #for f in all_file_names:
-        #   os.remove(f)
-
+        try:
+            for f in all_file_names:
+                os.remove(f)
+        except FileNotFoundError:
+            pass
+        
         for file in files:
             with open(file, 'r') as f:
                 data = json.load(f)
@@ -85,7 +87,6 @@ def main():
                 tokenized = [token.lower() for token in tokenized if token not in string.punctuation]
                 #allows stemming to work with lowercase words
                 stemmed = [ps.stem(s, to_lowercase=True) for s in tokenized]
-
                 #getting partial_index from current html
                 partial_inverted_index = indexing(stemmed, file)
                 #json_data = json.dumps(partial_inverted_index, indent=2)
@@ -96,14 +97,28 @@ def main():
                 #write to those files and update dictionary from file and current index
                 
                 for i, current_dict in enumerate(sep_dicts):
+                    try:
+                        with open(all_file_names[i], 'r') as infile:
+                            try:
+                                old_index = json.load(infile)
+                            except JSONDecodeError:
+                                old_index = dict()
+                    except FileNotFoundError:
+                        old_index = dict()
+                    merged_dict = mergeDict(old_index, current_dict)
+                    with open(all_file_names[i], 'w') as outfile:
+                        json.dump(merged_dict, outfile, indent=4)
+                    # with open(all_file_names[i], 'r') as infile, open(all_file_names[i], 'w') as outfile:
+                    #     try:
+                    #         old_index = json.load(infile)
+                    #         print("Merging:")
+                    #         merged_dict = mergeDict(old_index, current_dict)
+                    #         print(merged_dict)
+                    #         json.dump(merged_dict, outfile, indent=4)
+                    #     except JSONDecodeError:
+                    #         print("heres")
+                    #         json.dump(current_dict, outfile, indent=4)
                     
-                    with open(all_file_names[i], 'w+') as infile, open(all_file_names[i], 'w') as outfile:
-                        try:
-                            old_index = json.load(infile)
-                            merged_dict = mergeDict(old_index, current_dict)
-                            json.dump(merged_dict, outfile, indent=4)
-                        except JSONDecodeError:
-                            json.dump(current_dict, outfile, indent=4)
     except KeyboardInterrupt:
         num_of_docs = len(files)
         num_of_tokens = 0
