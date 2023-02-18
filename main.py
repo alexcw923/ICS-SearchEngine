@@ -146,28 +146,8 @@ def main():
 
     #writing report at the end
     writeReport(files, all_file_names)
-    
-    #FIXME: The token doesn't look good. E.g. ''": [
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
-    #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0"
-    # ],     
+    print("Program terminated. Tokens have been indexed successfully.")
+    #FIXME: The token doesn't look good.
         
 if __name__ == "__main__":
     main()
