@@ -104,6 +104,7 @@ def main():
         #looping thru each file in DEV path
         for file in files:
             with open(file, 'r') as f:
+                print(f.name)
                 data = json.load(f)
                 content = data['content']
 
