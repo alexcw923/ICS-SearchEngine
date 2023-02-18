@@ -1,6 +1,3 @@
-DEV
-a_f.json
-g_l.json
-m_s.json
-report.txt
-t_z.json
+/DEV
+*.json
+*.txt
