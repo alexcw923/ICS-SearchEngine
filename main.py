@@ -8,13 +8,17 @@ from collections import defaultdict
 from json.decoder import JSONDecodeError
 import time
 
-def indexing(stem : str, filename : str) -> dict:
+def indexing(stem : list, filename : str) -> dict:
     #token : file 
-    partial_index = defaultdict(list)
+    token_counts = defaultdict(int)
+    partial_index = dict()
     
     for s in stem:
-        partial_index[s].append(getFileName(filename))
-
+        token_counts[s] += 1
+    
+    for token, count in token_counts.items():
+        partial_index[token] = [filename + "," + str(count)]
+    
     return partial_index
     
 #getting file name from full path
@@ -22,6 +26,8 @@ def getFileName(path):
     return Path(path).stem
 
 #merging two dictionaries
+#dict1 should be full index, dict2 is partial 
+#dict1 value is list of strings, dict2 value is string
 def mergeDict(d1, d2):
     
     #merged_dict = defaultdict(list)
