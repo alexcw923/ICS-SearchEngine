@@ -20,6 +20,7 @@ def indexing(stem : str, filename : str) -> dict:
 def getFileName(path):
     return Path(path).stem
 
+#merging two dictionaries
 def mergeDict(d1, d2):
     
     merged_dict = defaultdict(list)
@@ -39,6 +40,7 @@ def mergeDict(d1, d2):
 def seperateDict(dict):
     a_f, g_l, m_s, t_z = {}, {}, {}, {}
 
+    #splitting indices
     for k, v in dict.items():
         if k[0] >= 'a' and k[0] <= 'f':
             a_f[k] = v
@@ -51,6 +53,30 @@ def seperateDict(dict):
 
     return [a_f, g_l, m_s, t_z]
 
+#writing report to file
+def writeReport(files, file_names):
+
+    #holding stats
+    num_of_docs = len(files)
+    num_of_tokens = 0
+    file_size = 0
+    
+    #Generate stats report for deliverable
+    with open('report.txt', 'w') as file:
+
+        for name in file_names:
+            
+            #getting data from index
+            with open(name, "r+") as f:
+                d = json.load(f)
+                num_of_tokens += len(d.keys())
+                file_size += os.path.getsize(name) / 1000
+        
+        #actually writing to file now
+        file.write("Number of Documents: " + str(num_of_docs) +"\n")
+        file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
+        file.write("Total Size: " + str(file_size) + " kb\n")
+    
 # import krovetz
 def main():
     try:
@@ -66,13 +92,14 @@ def main():
 
         all_file_names = ['a_f.json', 'g_l.json', 'm_s.json', 't_z.json']
         
-        # UNCOMMENT AFTER FIRST RUN
+        # Removing Files if rerunning
         try:
             for f in all_file_names:
                 os.remove(f)
         except FileNotFoundError:
             pass
         
+        #looping thru each file in DEV path
         for file in files:
             with open(file, 'r') as f:
                 data = json.load(f)
@@ -95,84 +122,30 @@ def main():
                 sep_dicts = seperateDict(partial_inverted_index)
 
                 #write to those files and update dictionary from file and current index
-                
                 for i, current_dict in enumerate(sep_dicts):
                     try:
                         with open(all_file_names[i], 'r') as infile:
                             try:
+                                #getting index from file
                                 old_index = json.load(infile)
                             except JSONDecodeError:
                                 old_index = dict()
                     except FileNotFoundError:
                         old_index = dict()
+
+                    #merging dictionaries
                     merged_dict = mergeDict(old_index, current_dict)
                     with open(all_file_names[i], 'w') as outfile:
+                        #dumping dict into json file
                         json.dump(merged_dict, outfile, indent=4)
-                    # with open(all_file_names[i], 'r') as infile, open(all_file_names[i], 'w') as outfile:
-                    #     try:
-                    #         old_index = json.load(infile)
-                    #         print("Merging:")
-                    #         merged_dict = mergeDict(old_index, current_dict)
-                    #         print(merged_dict)
-                    #         json.dump(merged_dict, outfile, indent=4)
-                    #     except JSONDecodeError:
-                    #         print("heres")
-                    #         json.dump(current_dict, outfile, indent=4)
                     
     except KeyboardInterrupt:
-        num_of_docs = len(files)
-        num_of_tokens = 0
-        file_size = 0
-        
-        #Generate stats report for deliverable
-        with open('report.txt', 'w') as file:
+        #Write report if we stop index halfway through
+        writeReport(files, all_file_names)
 
-            for name in all_file_names:
-                
-                with open(name, "r+") as f:
-                    d = json.load(f)
-                    num_of_tokens += len(d.keys())
-                    file_size += os.path.getsize(name) / 1000
-            
-            file.write("Number of Documents: " + str(num_of_docs) +"\n")
-            file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
-            file.write("Total Size: " + str(file_size) + " kb\n")
 
-                
-                #file name to write to
-                # with open(all_file_names[i], 'r') as f:
-                #     #getting dict from file
-                #     old_index = json.load(f)
-
-                # #merging dict
-                # merged_dict = mergeDict(old_index, current_dict)
-
-                #     #writing dict back to file
-                #     #f.seek(0)
-                    
-                # with open(all_file_names[i], 'w') as f:
-                #     json.dump(merged_dict, f, indent=4)
-
-            
-    #TODO 
-    
-    num_of_docs = len(files)
-    num_of_tokens = 0
-    file_size = 0
-    
-    #Generate stats report for deliverable
-    with open('report.txt', 'w') as file:
-
-        for name in all_file_names:
-            
-            with open(name, "r+") as f:
-                d = json.load(f)
-                num_of_tokens += len(d.keys())
-                file_size += os.path.getsize(name) / 1000
-        
-        file.write("Number of Documents: " + str(num_of_docs) +"\n")
-        file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
-        file.write("Total Size: " + str(file_size) + " kb\n")
+    #writing report at the end
+    writeReport(files, all_file_names)
     
     #FIXME: The token doesn't look good. E.g. ''": [
     #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
@@ -194,12 +167,7 @@ def main():
     #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
     #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0",
     #     "dc596b968c5a2187c988ca8f001404b13ce74964f23eca221520abc9ecc0e3f0"
-    # ],
-                
-
-    
-
-            
+    # ],     
         
 if __name__ == "__main__":
     main()
