@@ -51,7 +51,7 @@ def seperateDict(dict):
         else:
             t_z[k] = v
 
-    return [a_f, g_l, m_s, t_z]
+    return a_f, g_l, m_s, t_z
 
 #writing report to file
 def writeReport(files, file_names):
@@ -70,7 +70,7 @@ def writeReport(files, file_names):
             with open(name, "r+") as f:
                 d = json.load(f)
                 num_of_tokens += len(d.keys())
-                file_size += os.path.getsize(name) / 1000
+                file_size += os.path.getsize(name) / 1024
         
         #actually writing to file now
         file.write("Number of Documents: " + str(num_of_docs) +"\n")
@@ -138,16 +138,16 @@ def main():
                     with open(all_file_names[i], 'w') as outfile:
                         #dumping dict into json file
                         json.dump(merged_dict, outfile, indent=4)
-                    
+        #writing report at the end
+        writeReport(files, all_file_names)
+        print("Program terminated. Tokens have been indexed successfully.")
+    #FIXME: The token doesn't look good.        
     except KeyboardInterrupt:
         #Write report if we stop index halfway through
         writeReport(files, all_file_names)
 
 
-    #writing report at the end
-    writeReport(files, all_file_names)
-    print("Program terminated. Tokens have been indexed successfully.")
-    #FIXME: The token doesn't look good.
+    
         
 if __name__ == "__main__":
     main()
