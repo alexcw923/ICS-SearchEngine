@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 from collections import defaultdict
 from json.decoder import JSONDecodeError
+import time
 
 def indexing(stem : str, filename : str) -> dict:
     #token : file 
@@ -23,18 +24,19 @@ def getFileName(path):
 #merging two dictionaries
 def mergeDict(d1, d2):
     
-    merged_dict = defaultdict(list)
+    #merged_dict = defaultdict(list)
     
     #merging two dicts
-    for key, value in d1.items():
-        merged_dict[key] += value
+    
     for key, value in d2.items():
-        merged_dict[key] += value
+        if key in d1:
+            d1[key] += value
+        else:
+            d1[key] = value
     #sorting values which is a list object
-    for ls in merged_dict.values():
-        ls.sort()
+    
 
-    return merged_dict
+    return d1
 
 #sepearting dictionary into term ranges
 def seperateDict(dict):
@@ -111,9 +113,9 @@ def main():
 
                 tokenized = word_tokenize(text)
                 #make sure tokens are lowercase
-                tokenized = [token.lower() for token in tokenized if token not in string.punctuation]
+                stemmed = [ps.stem(token.lower(), to_lowercase=True) for token in tokenized if token not in string.punctuation]
                 #allows stemming to work with lowercase words
-                stemmed = [ps.stem(s, to_lowercase=True) for s in tokenized]
+                #stemmed = [ps.stem(s, to_lowercase=True) for s in tokenized]
                 #getting partial_index from current html
                 partial_inverted_index = indexing(stemmed, file)
                 #json_data = json.dumps(partial_inverted_index, indent=2)
@@ -150,4 +152,7 @@ def main():
     
         
 if __name__ == "__main__":
+    start = time.time()
     main()
+    end = time.time()
+    print("Time of execution is: ", (end-start))
