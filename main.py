@@ -46,20 +46,67 @@ def mergeDict(d1, d2):
 
 #sepearting dictionary into term ranges
 def seperateDict(dict):
-    a_f, g_l, m_s, t_z = {}, {}, {}, {}
+    
+    a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
 
     #splitting indices
-    for k, v in dict.items():
-        if k[0] >= 'a' and k[0] <= 'f':
-            a_f[k] = v
-        elif k[0] >= 'g' and k[0] <= 'l':
-            g_l[k] = v
-        elif k[0] >= 'm' and k[0] <= 's':
-            m_s[k] = v
+    for key, val in dict.items():
+        if key[0] == 'a':
+            a[key] = val
+        elif key[0] == 'b':
+            b[key] = val
+        elif key[0] == 'c':
+            c[key] = val
+        elif key[0] == 'd':
+            d[key] = val
+        elif key[0] == 'e':
+            e[key] = val
+        elif key[0] == 'f':
+            f[key] = val
+        elif key[0] == 'g':
+            g[key] = val
+        elif key[0] == 'h':
+            h[key] = val
+        elif key[0] == 'i':
+            i[key] = val
+        elif key[0] == 'j':
+            j[key] = val
+        elif key[0] == 'k':
+            k[key] = val
+        elif key[0] == 'l':
+            l[key] = val
+        elif key[0] == 'm':
+            m[key] = val
+        elif key[0] == 'n':
+            n[key] = val
+        elif key[0] == 'o':
+            o[key] = val
+        elif key[0] == 'p':
+            p[key] = val
+        elif key[0] == 'q':
+            q[key] = val
+        elif key[0] == 'r':
+            r[key] = val
+        elif key[0] == 's':
+            s[key] = val
+        elif key[0] == 't':
+            t[key] = val
+        elif key[0] == 'u':
+            u[key] = val
+        elif key[0] == 'v':
+            v[key] = val
+        elif key[0] == 'w':
+            w[key] = val
+        elif key[0] == 'x':
+            x[key] = val
+        elif key[0] == 'y':
+            y[key] = val
+        elif key[0] == 'z':
+            z[key] = val
         else:
-            t_z[k] = v
+            spec[key] = val
 
-    return a_f, g_l, m_s, t_z
+    return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec
 
 #writing report to file
 def writeReport(files, file_names):
@@ -98,7 +145,7 @@ def main():
         # for each file tokenize, stem token, the create rev index for each file
         ps = PorterStemmer()
 
-        all_file_names = ['a_f.json', 'g_l.json', 'm_s.json', 't_z.json']
+        all_file_names = ['a.json', 'b.json', 'c.json', 'd.json', 'e.json', 'f.json', 'g.json', 'h.json', 'i.json', 'j.json', 'k.json', 'l.json', 'm.json', 'n.json', 'o.json', 'p.json', 'q.json', 'r.json', 's.json', 't.json', 'u.json', 'v.json', 'w.json', 'x.json', 'y.json', 'z.json', 'spec.json']
         
         # Removing Files if rerunning
         try:
@@ -127,26 +174,27 @@ def main():
                 partial_inverted_index = indexing(stemmed, file)
                 #json_data = json.dumps(partial_inverted_index, indent=2)
 
-                #splitting partial index into 4 term ranges
+                #splitting partial index into 27 term ranges
                 sep_dicts = seperateDict(partial_inverted_index)
 
                 #write to those files and update dictionary from file and current index
                 for i, current_dict in enumerate(sep_dicts):
-                    try:
-                        with open(all_file_names[i], 'r') as infile:
-                            try:
-                                #getting index from file
-                                old_index = json.load(infile)
-                            except JSONDecodeError:
-                                old_index = dict()
-                    except FileNotFoundError:
-                        old_index = dict()
+                    if current_dict:
+                        try:
+                            with open(all_file_names[i], 'r') as infile:
+                                try:
+                                    #getting index from file
+                                    old_index = json.load(infile)
+                                except JSONDecodeError:
+                                    old_index = dict()
+                        except FileNotFoundError:
+                            old_index = dict()
 
-                    #merging dictionaries
-                    merged_dict = mergeDict(old_index, current_dict)
-                    with open(all_file_names[i], 'w') as outfile:
-                        #dumping dict into json file
-                        json.dump(merged_dict, outfile, indent=4)
+                        #merging dictionaries
+                        merged_dict = mergeDict(old_index, current_dict)
+                        with open(all_file_names[i], 'w') as outfile:
+                            #dumping dict into json file
+                            json.dump(merged_dict, outfile, indent=4)
         #writing report at the end
         writeReport(files, all_file_names)
         print("Program terminated. Tokens have been indexed successfully.")
