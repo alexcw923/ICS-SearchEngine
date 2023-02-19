@@ -157,6 +157,28 @@ def write_full_index(sep_dicts):
             with open(all_file_names[i], 'w') as outfile:
             #dumping dict into json file
                 json.dump(merged_dict, outfile)
+
+def merge_files(numPartial, full_ind_files):
+    for num in range(numPartial):
+        filename = f"index{num}.json"
+        with open(filename, 'r') as partial_file:
+            partial_index = json.load(partial_file)
+            sep_dicts = seperateDict(partial_index)
+            for i, current_dict in enumerate(sep_dicts):
+                if current_dict:
+                    try:
+                        with open(full_ind_files[i], 'r') as full_file:
+                            try:
+                                full_index = json.load(full_file)
+                            except JSONDecodeError:
+                                full_index = dict()
+                    except FileNotFoundError:
+                        full_index = dict()
+                
+                merged_dict = mergeDict(full_index, current_dict)
+                with open(full_ind_files[i], 'w') as outfile:
+                    json.dump(merged_dict, outfile)
+
     
 
 
@@ -193,7 +215,7 @@ def main():
     except FileNotFoundError:
         pass
     
-    root_dir = 'ANALYST'
+    root_dir = 'DEV'
     ps = PorterStemmer()
     inverted_index = {}
     mapped_files = {}
@@ -218,7 +240,7 @@ def main():
                 text = soup.get_text()
                 # now we must get tokens
                 curTotalSize += (os.path.getsize(cur_file) / 1024.0)
-                print(curTotalSize)
+                #print(curTotalSize)
                 tokenized = word_tokenize(text)
                 #make sure tokens are lowercase
                 stemmed = [ps.stem(token.lower(), to_lowercase=True) for token in tokenized if checkToken(token)]
@@ -229,17 +251,19 @@ def main():
                     
                     inverted_index[key].append([n, val])
                 # separate index into ranges based on first letter
-                if curTotalSize > 9500:
+                if curTotalSize > 10000:
                     sortAndWriteToDisk(inverted_index, indnum)
                     inverted_index.clear()
                     indnum += 1
                     curTotalSize = 0.0
         #sep_dicts = seperateDict(inverted_index)
         #write_full_index(sep_dicts)
-    sortAndWriteToDisk(inverted_index, indnum)
-    inverted_index.clear()
+    if curTotalSize > 0.0:
+        sortAndWriteToDisk(inverted_index, indnum)
+        inverted_index.clear()
+        indnum += 1
     
-    #writeReport(n, all_file_names)
+    writeReport(n, all_file_names)
     
         
     
