@@ -184,7 +184,7 @@ def main():
     except FileNotFoundError:
         pass
     
-    root_dir = 'DEV'
+    root_dir = 'ANALYST'
     ps = PorterStemmer()
     inverted_index = {}
     mapped_files = {}
