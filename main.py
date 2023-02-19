@@ -169,7 +169,7 @@ def main():
             os.remove(f)
     except FileNotFoundError:
         pass
-    root_dir = 'ANALYST'
+    root_dir = 'DEV'
     ps = PorterStemmer()
     inverted_index = {}
     mapped_files = {}
@@ -197,11 +197,12 @@ def main():
                 for key, val in token_counts.items():
                     if key not in inverted_index:
                         inverted_index[key] = []
-                    inverted_index[key].append(tuple(n, val))
+                    
+                    inverted_index[key].append((n, val))
                 # separate index into ranges based on first letter
-                sep_dicts = seperateDict(inverted_index)
-                write_full_index(sep_dicts)
-                inverted_index.clear()
+        sep_dicts = seperateDict(inverted_index)
+        write_full_index(sep_dicts)
+        inverted_index.clear()
     
     writeReport(n, all_file_names)
     
