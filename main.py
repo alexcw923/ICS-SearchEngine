@@ -130,7 +130,7 @@ def seperateDict(dict):
     #return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec
 
 def sortAndWriteToDisk(partial_index, filenum):
-    filename = f"index{filenum}"
+    filename = f"index{filenum}.json"
     for key in partial_index:
         partial_index[key].sort()
     
@@ -198,10 +198,11 @@ def main():
     inverted_index = {}
     mapped_files = {}
     n = 0
-    dirnum = 0
+    indnum = 0
+    curTotalSize = 0.0
     for dir in os.listdir(root_dir):
         directory = os.path.join(root_dir, dir)
-        dirnum += 1
+        
         for f in os.listdir(directory):
             n = n + 1
             cur_file = os.path.join(directory, f)
@@ -216,6 +217,8 @@ def main():
                 # FIXME: 
                 text = soup.get_text()
                 # now we must get tokens
+                curTotalSize += (os.path.getsize(cur_file) / 1024.0)
+                print(curTotalSize)
                 tokenized = word_tokenize(text)
                 #make sure tokens are lowercase
                 stemmed = [ps.stem(token.lower(), to_lowercase=True) for token in tokenized if checkToken(token)]
@@ -226,10 +229,15 @@ def main():
                     
                     inverted_index[key].append([n, val])
                 # separate index into ranges based on first letter
+                if curTotalSize > 9500:
+                    sortAndWriteToDisk(inverted_index, indnum)
+                    inverted_index.clear()
+                    indnum += 1
+                    curTotalSize = 0.0
         #sep_dicts = seperateDict(inverted_index)
         #write_full_index(sep_dicts)
-        sortAndWriteToDisk(inverted_index, dirnum)
-        inverted_index.clear()
+    sortAndWriteToDisk(inverted_index, indnum)
+    inverted_index.clear()
     
     #writeReport(n, all_file_names)
     
