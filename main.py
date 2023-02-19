@@ -6,20 +6,21 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 from collections import defaultdict
 from json.decoder import JSONDecodeError
+import posting
 import time
 
-def indexing(stem : list, filename : str) -> dict:
+def indexing(stem : list) -> dict:
     #token : file 
     token_counts = defaultdict(int)
     partial_index = dict()
     
     for s in stem:
         token_counts[s] += 1
-    
+    '''
     for token, count in token_counts.items():
         partial_index[token] = [filename + "," + str(count)]
-    
-    return partial_index
+    '''
+    return token_counts
     
 #getting file name from full path
 def getFileName(path):
@@ -132,7 +133,46 @@ def writeReport(files, file_names):
         file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
         file.write("Total Size: " + str(file_size) + " kb\n")
     
+def main():
+    root_dir = 'ANALYST'
+    ps = PorterStemmer()
+    inverted_index = {}
+    mapped_files = {}
+    n = 0
+    for dir in os.listdir(root_dir):
+        directory = os.path.join(root_dir, dir)
+        for f in os.listdir(directory):
+            n = n + 1
+            cur_file = os.path.join(directory, f)
+            mapped_files[n] = cur_file
+            print(cur_file)
+            with open(cur_file, 'r') as file:
+                # parse through file
+                data = json.load(file)
+                content = data['content']
+
+                soup = BeautifulSoup(content, 'lxml')
+                # FIXME: 
+                text = soup.get_text()
+                # now we must get tokens
+                tokenized = word_tokenize(text)
+                #make sure tokens are lowercase
+                stemmed = [ps.stem(token.lower(), to_lowercase=True) for token in tokenized if token not in string.punctuation]
+                token_counts = indexing(stemmed)
+                for key, val in token_counts.items():
+                    if key not in inverted_index:
+                        inverted_index[key] = []
+                    inverted_index[key].append(posting.Posting(n, val))
+    
+    print(mapped_files)
+    for k, v in inverted_index.items():
+        print(k + ', ' + v)    
+        #print(f)
+        
+    
+
 # import krovetz
+'''
 def main():
     try:
         #beginning path
@@ -202,7 +242,7 @@ def main():
     except KeyboardInterrupt:
         #Write report if we stop index halfway through
         writeReport(files, all_file_names)
-
+'''
 
     
         
