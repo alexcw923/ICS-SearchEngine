@@ -44,6 +44,7 @@ def mergeDict(d1, d2):
     for key, value in d2.items():
         if key in d1:
             d1[key] += value
+            d1[key].sort()
         else:
             d1[key] = value
     #sorting values which is a list object
@@ -54,10 +55,21 @@ def mergeDict(d1, d2):
 #sepearting dictionary into term ranges
 def seperateDict(dict):
     
-    a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-
+    #a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+    a_f, g_l, m_s, t_z, spec = {}, {}, {}, {}, {} 
     #splitting indices
     for key, val in dict.items():
+        if key[0] >= 'a' and key[0] <= 'f':
+            a_f[key] = val
+        elif key[0] >= 'g' and key[0] <= 'l':
+            g_l[key] = val
+        elif key[0] >= 'm' and key[0] <= 's':
+            m_s[key] = val
+        elif key[0] >= 't' and key[0] <= 'z':
+            t_z[key] = val
+        else:
+            spec[key] = val
+        '''
         if key[0] == 'a':
             a[key] = val
         elif key[0] == 'b':
@@ -112,11 +124,12 @@ def seperateDict(dict):
             z[key] = val
         else:
             spec[key] = val
-
-    return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec
+        '''
+    return a_f, g_l, m_s, t_z, spec
+    #return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec
 
 def write_full_index(sep_dicts):
-    all_file_names = ['a.json', 'b.json', 'c.json', 'd.json', 'e.json', 'f.json', 'g.json', 'h.json', 'i.json', 'j.json', 'k.json', 'l.json', 'm.json', 'n.json', 'o.json', 'p.json', 'q.json', 'r.json', 's.json', 't.json', 'u.json', 'v.json', 'w.json', 'x.json', 'y.json', 'z.json', 'spec.json']
+    all_file_names = ['a_f.json', 'g_l.json', 'm_s.json','t_z.json','spec.json']
     for i, current_dict in enumerate(sep_dicts):
         if current_dict:
             try:
@@ -169,6 +182,7 @@ def main():
             os.remove(f)
     except FileNotFoundError:
         pass
+    all_file_names = ['a_f.json', 'g_l.json', 'm_s.json','t_z.json','spec.json']
     root_dir = 'DEV'
     ps = PorterStemmer()
     inverted_index = {}
