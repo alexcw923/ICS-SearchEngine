@@ -44,6 +44,7 @@ def mergeDict(d1, d2):
     for key, value in d2.items():
         if key in d1:
             d1[key] += value
+            
             d1[key].sort()
         else:
             d1[key] = value
@@ -146,7 +147,7 @@ def write_full_index(sep_dicts):
             merged_dict = mergeDict(old_index, current_dict)
             with open(all_file_names[i], 'w') as outfile:
             #dumping dict into json file
-                json.dump(merged_dict, outfile, indent=4)
+                json.dump(merged_dict, outfile)
     
 
 
@@ -176,13 +177,13 @@ def writeReport(files, file_names):
         file.write("Total Size: " + str(file_size) + " kb\n")
     
 def main():
-    all_file_names = ['a.json', 'b.json', 'c.json', 'd.json', 'e.json', 'f.json', 'g.json', 'h.json', 'i.json', 'j.json', 'k.json', 'l.json', 'm.json', 'n.json', 'o.json', 'p.json', 'q.json', 'r.json', 's.json', 't.json', 'u.json', 'v.json', 'w.json', 'x.json', 'y.json', 'z.json', 'spec.json']
+    all_file_names = ['a_f.json', 'g_l.json', 'm_s.json','t_z.json','spec.json']
     try:
         for f in all_file_names:
             os.remove(f)
     except FileNotFoundError:
         pass
-    all_file_names = ['a_f.json', 'g_l.json', 'm_s.json','t_z.json','spec.json']
+    
     root_dir = 'DEV'
     ps = PorterStemmer()
     inverted_index = {}
@@ -212,7 +213,7 @@ def main():
                     if key not in inverted_index:
                         inverted_index[key] = []
                     
-                    inverted_index[key].append((n, val))
+                    inverted_index[key].append([n, val])
                 # separate index into ranges based on first letter
         sep_dicts = seperateDict(inverted_index)
         write_full_index(sep_dicts)
