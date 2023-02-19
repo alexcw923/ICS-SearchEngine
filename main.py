@@ -129,6 +129,15 @@ def seperateDict(dict):
     return a_f, g_l, m_s, t_z, spec
     #return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec
 
+def sortAndWriteToDisk(partial_index, filenum):
+    filename = f"index{filenum}"
+    for key in partial_index:
+        partial_index[key].sort()
+    
+    with open(filename, 'w') as json_file:
+        json.dump(partial_index, json_file, sort_keys = True)
+    
+
 def write_full_index(sep_dicts):
     all_file_names = ['a_f.json', 'g_l.json', 'm_s.json','t_z.json','spec.json']
     for i, current_dict in enumerate(sep_dicts):
@@ -189,8 +198,10 @@ def main():
     inverted_index = {}
     mapped_files = {}
     n = 0
+    dirnum = 0
     for dir in os.listdir(root_dir):
         directory = os.path.join(root_dir, dir)
+        dirnum += 1
         for f in os.listdir(directory):
             n = n + 1
             cur_file = os.path.join(directory, f)
@@ -215,11 +226,12 @@ def main():
                     
                     inverted_index[key].append([n, val])
                 # separate index into ranges based on first letter
-        sep_dicts = seperateDict(inverted_index)
-        write_full_index(sep_dicts)
+        #sep_dicts = seperateDict(inverted_index)
+        #write_full_index(sep_dicts)
+        sortAndWriteToDisk(inverted_index, dirnum)
         inverted_index.clear()
     
-    writeReport(n, all_file_names)
+    #writeReport(n, all_file_names)
     
         
     
