@@ -9,6 +9,12 @@ from json.decoder import JSONDecodeError
 import posting
 import time
 
+def checkToken(token):
+    for c in token:
+        if c.isalnum():
+            return True
+    return False
+
 def indexing(stem : list) -> dict:
     #token : file 
     token_counts = defaultdict(int)
@@ -109,11 +115,34 @@ def seperateDict(dict):
 
     return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec
 
+def write_full_index(sep_dicts):
+    all_file_names = ['a.json', 'b.json', 'c.json', 'd.json', 'e.json', 'f.json', 'g.json', 'h.json', 'i.json', 'j.json', 'k.json', 'l.json', 'm.json', 'n.json', 'o.json', 'p.json', 'q.json', 'r.json', 's.json', 't.json', 'u.json', 'v.json', 'w.json', 'x.json', 'y.json', 'z.json', 'spec.json']
+    for i, current_dict in enumerate(sep_dicts):
+        if current_dict:
+            try:
+                with open(all_file_names[i], 'r') as infile:
+                    try:
+                        #getting index from file
+                        old_index = json.load(infile)
+                    except JSONDecodeError:
+                        old_index = dict()
+            except FileNotFoundError:
+                old_index = dict()
+
+            #merging dictionaries
+            merged_dict = mergeDict(old_index, current_dict)
+            with open(all_file_names[i], 'w') as outfile:
+            #dumping dict into json file
+                json.dump(merged_dict, outfile, indent=4)
+    
+
+
+
 #writing report to file
 def writeReport(files, file_names):
 
     #holding stats
-    num_of_docs = len(files)
+    num_of_docs = files
     num_of_tokens = 0
     file_size = 0
     
@@ -134,6 +163,12 @@ def writeReport(files, file_names):
         file.write("Total Size: " + str(file_size) + " kb\n")
     
 def main():
+    all_file_names = ['a.json', 'b.json', 'c.json', 'd.json', 'e.json', 'f.json', 'g.json', 'h.json', 'i.json', 'j.json', 'k.json', 'l.json', 'm.json', 'n.json', 'o.json', 'p.json', 'q.json', 'r.json', 's.json', 't.json', 'u.json', 'v.json', 'w.json', 'x.json', 'y.json', 'z.json', 'spec.json']
+    try:
+        for f in all_file_names:
+            os.remove(f)
+    except FileNotFoundError:
+        pass
     root_dir = 'ANALYST'
     ps = PorterStemmer()
     inverted_index = {}
@@ -144,7 +179,7 @@ def main():
         for f in os.listdir(directory):
             n = n + 1
             cur_file = os.path.join(directory, f)
-            mapped_files[n] = cur_file
+            #mapped_files[n] = cur_file
             print(cur_file)
             with open(cur_file, 'r') as file:
                 # parse through file
@@ -157,17 +192,19 @@ def main():
                 # now we must get tokens
                 tokenized = word_tokenize(text)
                 #make sure tokens are lowercase
-                stemmed = [ps.stem(token.lower(), to_lowercase=True) for token in tokenized if token not in string.punctuation]
+                stemmed = [ps.stem(token.lower(), to_lowercase=True) for token in tokenized if checkToken(token)]
                 token_counts = indexing(stemmed)
                 for key, val in token_counts.items():
                     if key not in inverted_index:
                         inverted_index[key] = []
-                    inverted_index[key].append(posting.Posting(n, val))
+                    inverted_index[key].append(tuple(n, val))
+                # separate index into ranges based on first letter
+                sep_dicts = seperateDict(inverted_index)
+                write_full_index(sep_dicts)
+                inverted_index.clear()
     
-    print(mapped_files)
-    for k, v in inverted_index.items():
-        print(k + ', ' + v)    
-        #print(f)
+    writeReport(n, all_file_names)
+    
         
     
 
