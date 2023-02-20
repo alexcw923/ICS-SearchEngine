@@ -8,6 +8,7 @@ from collections import defaultdict
 from json.decoder import JSONDecodeError
 import posting
 import time
+import sys
 
 def checkToken(token):
     for c in token:
@@ -178,10 +179,17 @@ def merge_files(numPartial, full_ind_files):
                 merged_dict = mergeDict(full_index, current_dict)
                 with open(full_ind_files[i], 'w') as outfile:
                     json.dump(merged_dict, outfile)
+        try:
+            os.remove(filename)
+        except FileNotFoundError:
+            pass
 
     
-
-
+def writeM1(inverted_index, numFiles):
+    with open('report.txt', 'w') as file:
+        file.write("Number of Documents: " + str(numFiles) + "\n")
+        file.write("Number of Unique Tokens: " + str(len(inverted_index)) + "\n")
+        file.write("Total Size: " + str(sys.getsizeof(inverted_index) / 1024) + " kb\n")
 
 #writing report to file
 def writeReport(files, file_names):
@@ -207,6 +215,43 @@ def writeReport(files, file_names):
         file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
         file.write("Total Size: " + str(file_size) + " kb\n")
     
+
+def main():
+    root_dir = 'DEV'
+    ps = PorterStemmer()
+    inverted_index = defaultdict(list)
+    mapped_files = {}
+    n = 0
+    for dir in os.listdir(root_dir):
+        directory = os.path.join(root_dir, dir)
+        for f in os.listdir(directory):
+            n = n + 1
+            cur_file = os.path.join(directory, f)
+            print(cur_file)
+            with open(cur_file, 'r') as file:
+                print("Loading data from json file")
+                data = json.load(file)
+                content = data['content']
+                soup = BeautifulSoup(content, 'lxml')
+                print("Getting text")
+                text = soup.get_text()
+                print("Tokenizing text with nltk")
+                tokenized = word_tokenize(text)
+                #make sure tokens are lowercase
+                print("Stemming text with Porter stemmer")
+                stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
+                print("Getting frequency of each token in stemmed list")
+                token_counts = indexing(stemmed)
+                print("Inserting into inverted index")
+                for token, freq in token_counts.items():
+                    inverted_index[token].append([n, freq])
+                mapped_files[n] = cur_file
+    with open("mapping.json", 'w') as mappings:
+        json.dump(mapped_files, mappings)
+    
+    writeM1(inverted_index, n)
+
+'''
 def main():
     all_file_names = ['a_f.json', 'g_l.json', 'm_s.json','t_z.json','spec.json']
     try:
@@ -251,7 +296,7 @@ def main():
                     
                     inverted_index[key].append([n, val])
                 # separate index into ranges based on first letter
-                if curTotalSize > 10000:
+                if curTotalSize > 20000:
                     sortAndWriteToDisk(inverted_index, indnum)
                     inverted_index.clear()
                     indnum += 1
@@ -262,10 +307,11 @@ def main():
         sortAndWriteToDisk(inverted_index, indnum)
         inverted_index.clear()
         indnum += 1
+    merge_files(indnum, all_file_names)
     
     writeReport(n, all_file_names)
     
-        
+'''       
     
 
 # import krovetz
