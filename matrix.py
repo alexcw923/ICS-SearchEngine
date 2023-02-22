@@ -5,15 +5,15 @@ class InstanceMatrix:
         
         self.matrix = np.zeros((len(index), len(map)))
         self.queries = np.array(list(index.keys()))
-        self.setMatrix(index)
+        self._setMatrix(index)
         
     #initialize matrix
-    def setMatrix(self, index):
+    def _setMatrix(self, index) -> None:
         for query, ls in index.items():
             for id in ls:
                 self.matrix[self.queries == query, id[0]] = 1
                 
-    def checkQuery(self, query :list):
+    def checkQuery(self, query :list) -> list:
         for q in query:
             if q not in self.queries:
                 return []
@@ -33,10 +33,11 @@ if __name__ == '__main__':
     print(im.matrix.shape)
     print(im.queries.shape)
     '''
-             0 1 2 3
-    caesar [[1 0 1 0], 
-    julius  [1 0 1 0], 
-    jason   [1 0 0 1]]'''
+                0 1 2 3
+    caesar    [[1 0 1 0], 
+    julius     [1 0 1 0], 
+    jason      [1 0 0 1]]
+    '''
     im.checkQuery(["caesar", "julius", "jason"]) #[0]
     im.checkQuery(["julius", "jason"])           #[0]
     im.checkQuery(["julius", "caesar"])          #[0, 2]
