@@ -7,6 +7,8 @@ from pathlib import Path
 from collections import defaultdict
 from json.decoder import JSONDecodeError
 from matrix import InstanceMatrix
+import posting
+import argparse
 
 def checkToken(token):
     for c in token:
@@ -195,10 +197,20 @@ def main():
     writeM1(inverted_index, n)
 
 
-
-
 if __name__ == "__main__":
     start = time.time()
+
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    parser_build = subparsers.add_parser("build")
+    parser_build.add_argument("--out", type=argparse.FileType('w'), default="reverse_index.json")
+
+    parser_search = subparsers.add_parser("search")
+    parser_search.add_argument("query", type=str)
+
+    args = parser.parse_args()
+
     main()
     end = time.time()
     print("Time of execution is: ", (end-start))
