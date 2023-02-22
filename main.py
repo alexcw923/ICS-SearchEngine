@@ -251,7 +251,7 @@ def main():
     with open("mapping.json", 'w') as mappings:
         json.dump(mapped_files, mappings)
     with open("invertedIndex.json", 'w') as index:
-        json.dump(inverted_index, index)
+        json.dump(inverted_index, index, indent=4)
     writeM1(inverted_index, n)
 
 '''
