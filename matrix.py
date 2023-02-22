@@ -13,7 +13,7 @@ class InstanceMatrix:
             for id in ls:
                 self.matrix[self.queries == query, id[0]] = 1
                 
-    def checkQuery(self, *query):
+    def checkQuery(self, query :list):
         for q in query:
             if q not in self.queries:
                 return []
@@ -37,6 +37,6 @@ if __name__ == '__main__':
     caesar [[1 0 1 0], 
     julius  [1 0 1 0], 
     jason   [1 0 0 1]]'''
-    im.checkQuery("caesar", "julius", "jason") #[0]
-    im.checkQuery("julius", "jason")           #[0]
-    im.checkQuery("julius", "caesar")          #[0, 2]
+    im.checkQuery(["caesar", "julius", "jason"]) #[0]
+    im.checkQuery(["julius", "jason"])           #[0]
+    im.checkQuery(["julius", "caesar"])          #[0, 2]
