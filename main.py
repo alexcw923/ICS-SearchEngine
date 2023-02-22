@@ -246,9 +246,12 @@ def main():
                 for token, freq in token_counts.items():
                     inverted_index[token].append([n, freq])
                 mapped_files[n] = cur_file
+    for token in inverted_index:
+        inverted_index[token].sort()
     with open("mapping.json", 'w') as mappings:
         json.dump(mapped_files, mappings)
-    
+    with open("invertedIndex.json", 'w') as index:
+        json.dump(inverted_index, index)
     writeM1(inverted_index, n)
 
 '''
