@@ -198,14 +198,22 @@ def main():
     
         
 if __name__ == "__main__":
+<<<<<<< HEAD
     #start = time.time()
     #main()
     #end = time.time()
     #print("Time of execution is: ", (end-start))
+=======
+    start = time.time()
+    main()
+    end = time.time()
+    print("Time of execution is: ", (end-start))
+>>>>>>> 6f3a0905cfdbbe60fa293700553ec40d709566d6
     
     queries = ["cristina lopes", "machine learning", "ACM", "master of software engineering"]
     
     with open("invertedIndex.json") as index:
+<<<<<<< HEAD
         print("loading inverted index")
         index = json.load(index)
     
@@ -254,3 +262,18 @@ if __name__ == "__main__":
         print()
     
     
+=======
+        index = json.load(index)
+    
+    with open("mapping.json") as mapFile:
+        mapping = json.load(mapFile)
+        
+    ps = PorterStemmer()
+    im = InstanceMatrix(index, mapping)
+    for q in queries:
+        tokenized = word_tokenize(q)
+        #make sure tokens are lowercase
+        stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
+        print(im.checkQuery(stemmed))
+  
+>>>>>>> 6f3a0905cfdbbe60fa293700553ec40d709566d6
