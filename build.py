@@ -14,13 +14,13 @@ def build(args):
     inverted_index = defaultdict(list)
     mapped_files = {}
     n = 0
-
     for dir in os.listdir(ROOT_DIR):
         directory = os.path.join(ROOT_DIR, dir)
+
         for f in os.listdir(directory):
-            n = n + 1
+
             cur_file = os.path.join(directory, f)
-            print(cur_file)
+
             with open(cur_file, 'r') as file:
                 # Load HTML data from json file
                 data = json.load(file)
@@ -35,16 +35,22 @@ def build(args):
                 tokenized = word_tokenize(text)
                 stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
 
-                print("Getting frequency of each token in stemmed list")
+                # Get frequency of each token in stemmed list
                 token_counts = indexing(stemmed)
-                print("Inserting into inverted index")
+
+                # Insert into inverted index
                 for token, freq in token_counts.items():
                     inverted_index[token].append([n, freq])
-                mapped_files[n] = cur_file
 
-    # docID : file
+                # Map file to enumerated index and store in file
+                mapped_files[n] = cur_file
+                n = n + 1
+
     with open("mapping.json", 'w') as mappings:
         json.dump(mapped_files, mappings)
+    with open("invertedIndex.json", 'w') as index:
+        json.dump(inverted_index, index, indent=4)
+    writeM1(inverted_index, n)
 
 
 def indexing(stem : list) -> dict:
@@ -60,3 +66,8 @@ def indexing(stem : list) -> dict:
     '''
     return token_counts
 
+def writeM1(inverted_index, numFiles):
+    with open('report.txt', 'w') as file:
+        file.write("Number of Documents: " + str(numFiles) + "\n")
+        file.write("Number of Unique Tokens: " + str(len(inverted_index)) + "\n")
+        file.write("Total Size: " + str(sys.getsizeof(inverted_index) / 1024) + " kb\n")
