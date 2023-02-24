@@ -2,11 +2,11 @@ import numpy as np
 
 class InstanceMatrix:
     def __init__(self, index : dict, map : dict):
-        
         self.matrix = np.zeros((len(index), len(map)))
-        self.queries = np.array(list(index.keys()))
+        self.queries = np.fromiter(index.keys(), dtype='object')
         self._setMatrix(index)
-        
+
+
     #initialize matrix
     def _setMatrix(self, index : dict) -> None:
         """Set the matrix to 1 if the query is in the document.

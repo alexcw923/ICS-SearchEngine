@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 from collections import defaultdict
 from json.decoder import JSONDecodeError
+from matrix import InstanceMatrix
 
 def checkToken(token):
     for c in token:
@@ -162,13 +163,13 @@ def main():
     root_dir = 'DEV'
     ps = PorterStemmer()
     inverted_index = defaultdict(list)
-    mapped_files = {}
+    #mapped_files = {}
     n = 0
     for dir in os.listdir(root_dir):
         directory = os.path.join(root_dir, dir)
 
         for f in os.listdir(directory):
-            n = n + 1
+            
             cur_file = os.path.join(directory, f)
             
             with open(cur_file, 'r') as file:
@@ -184,18 +185,72 @@ def main():
                 for token, freq in token_counts.items():
                     inverted_index[token].append([n, freq])
 
-                mapped_files[n] = cur_file
+                #mapped_files[n] = cur_file
+                n = n + 1
 
-    with open("mapping.json", 'w') as mappings:
-        json.dump(mapped_files, mappings)
-    
+    # with open("mapping.json", 'w') as mappings:
+    #     json.dump(mapped_files, mappings)
+    with open("invertedIndex.json", 'w') as index:
+        json.dump(inverted_index, index, indent=4)
     writeM1(inverted_index, n)
+
 
     
         
 if __name__ == "__main__":
-    start = time.time()
-    main()
-    end = time.time()
-    print("Time of execution is: ", (end-start))
+    #start = time.time()
+    #main()
+    #end = time.time()
+    #print("Time of execution is: ", (end-start))
+    
+    queries = ["cristina lopes", "machine learning", "ACM", "master of software engineering"]
+    
+    with open("invertedIndex.json") as index:
+        print("loading inverted index")
+        index = json.load(index)
+    
+    with open("mapping.json") as mapFile:
+        print("mapping file")
+        mapping = json.load(mapFile)
+    
+    newIndex = {}
+
+    ps = PorterStemmer()
+    for q in queries:
+        tokenized = word_tokenize(q)
+        #make sure tokens are lowercase
+        stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
+        for tok in stemmed:
+            newIndex[tok] = index[tok]
+    
+    im = InstanceMatrix(index, mapping)
+    print("finished")
+    docs = []
+    for  q in queries:
+        tokenized = word_tokenize(q)
+        #make sure tokens are lowercase
+        stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
+        temp = im.checkQuery(stemmed)
+
+        docs.append(temp[0:5])
+    
+    stats = []
+    
+    #printing top 5 urls for eadch query
+    for i in docs:
+        urls = []
+
+        for j in i:
+            with open(mapping[str(j)]) as file:
+                data = json.load(file)
+                urls.append(data["url"])
+
+        stats.append(urls)
+    
+    for i in range (len(queries)):
+        print(queries[i])
+        for j in range(5):
+            print(stats[i][j])
+        print()
+    
     
