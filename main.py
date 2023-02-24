@@ -7,7 +7,6 @@ from pathlib import Path
 from collections import defaultdict
 from json.decoder import JSONDecodeError
 from matrix import InstanceMatrix
-import posting
 import argparse
 
 from build import build
