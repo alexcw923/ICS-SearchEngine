@@ -8,12 +8,25 @@ class InstanceMatrix:
         self._setMatrix(index)
         
     #initialize matrix
-    def _setMatrix(self, index) -> None:
+    def _setMatrix(self, index : dict) -> None:
+        """Set the matrix to 1 if the query is in the document.
+
+        Args:
+            index (dict): index of the documents
+        """
         for query, ls in index.items():
             for id in ls:
                 self.matrix[self.queries == query, id[0]] = 1
                 
     def checkQuery(self, query :list) -> list:
+        """Check which documents contain all the words in the query.
+
+        Args:
+            query (list): list of words
+
+        Returns:
+            list: document ids that contain all the words in the query
+        """
         for q in query:
             if q not in self.queries:
                 return []
@@ -41,3 +54,5 @@ if __name__ == '__main__':
     im.checkQuery(["caesar", "julius", "jason"]) #[0]
     im.checkQuery(["julius", "jason"])           #[0]
     im.checkQuery(["julius", "caesar"])          #[0, 2]
+    
+    

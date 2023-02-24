@@ -1,4 +1,4 @@
-import os, json, string
+import os, json, sys, time
 from glob import glob
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
@@ -6,9 +6,6 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 from collections import defaultdict
 from json.decoder import JSONDecodeError
-import time
-import sys
-import numpy as np
 
 def checkToken(token):
     for c in token:
@@ -169,12 +166,12 @@ def main():
     n = 0
     for dir in os.listdir(root_dir):
         directory = os.path.join(root_dir, dir)
+
         for f in os.listdir(directory):
             n = n + 1
             cur_file = os.path.join(directory, f)
-            print(cur_file)
+            
             with open(cur_file, 'r') as file:
-                print("Loading data from npz file")
                 data = json.load(file)
                 content = data['content']
                 soup = BeautifulSoup(content, 'lxml')
@@ -182,12 +179,13 @@ def main():
                 tokenized = word_tokenize(text)
                 #make sure tokens are lowercase
                 stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
-                print("Getting frequency of each token in stemmed list")
                 token_counts = indexing(stemmed)
-                print("Inserting into inverted index")
+
                 for token, freq in token_counts.items():
                     inverted_index[token].append([n, freq])
+
                 mapped_files[n] = cur_file
+
     with open("mapping.json", 'w') as mappings:
         json.dump(mapped_files, mappings)
     
