@@ -1,3 +1,0 @@
-Number of Documents: 55393
-Number of Unique Tokens: 1901342
-Total Size: 81920.09375 kb
