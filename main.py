@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 from collections import defaultdict
 from json.decoder import JSONDecodeError
+from matrix import InstanceMatrix
 
 def checkToken(token):
     for c in token:
@@ -199,3 +200,19 @@ if __name__ == "__main__":
     end = time.time()
     print("Time of execution is: ", (end-start))
     
+    queries = ["cristina lopes", "machine learning", "ACM", "master of software engineering"]
+    
+    with open("invertedIndex.json") as index:
+        index = json.load(index)
+    
+    with open("mapping.json") as mapFile:
+        mapping = json.load(mapFile)
+        
+    ps = PorterStemmer()
+    im = InstanceMatrix(index, mapping)
+    for q in queries:
+        tokenized = word_tokenize(q)
+        #make sure tokens are lowercase
+        stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
+        print(im.checkQuery(stemmed))
+  

@@ -43,8 +43,6 @@ if __name__ == '__main__':
     index = {"caesar": [[0, 1], [2, 3]], "julius": [[0,2], [2, 3]], "jason": [[0, 3], [3,2]]}
     map = {0:"caesar.txt", 1:"julius.txt", 2:"jason.txt", 3:"julius2.txt"}
     im = InstanceMatrix(index, map)
-    print(im.matrix.shape)
-    print(im.queries.shape)
     '''
                 0 1 2 3
     caesar    [[1 0 1 0], 
@@ -55,4 +53,8 @@ if __name__ == '__main__':
     im.checkQuery(["julius", "jason"])           #[0]
     im.checkQuery(["julius", "caesar"])          #[0, 2]
     
+    user_input = input("Enter a query: ")
+    user_input = user_input.split()
     
+    im2 = InstanceMatrix(index, map)
+    print(im2.checkQuery(user_input))

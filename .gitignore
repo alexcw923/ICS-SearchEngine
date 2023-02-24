@@ -1,3 +1,6 @@
 /DEV
 *.json
 *.txt
+
+__pycache__
+.gitignore
