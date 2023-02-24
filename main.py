@@ -15,10 +15,10 @@ def checkToken(token):
     return False
 
 def indexing(stem : list) -> dict:
-    #token : file 
+    #token : file
     token_counts = defaultdict(int)
     # partial_index = dict()
-    
+
     for s in stem:
         token_counts[s] += 1
     '''
@@ -26,37 +26,37 @@ def indexing(stem : list) -> dict:
         partial_index[token] = [filename + "," + str(count)]
     '''
     return token_counts
-    
+
 #getting file name from full path
 def getFileName(path):
     return Path(path).stem
 
 #merging two dictionaries
-#dict1 should be full index, dict2 is partial 
+#dict1 should be full index, dict2 is partial
 #dict1 value is list of strings, dict2 value is string
 def mergeDict(d1, d2):
-    
+
     #merged_dict = defaultdict(list)
-    
+
     #merging two dicts
-    
+
     for key, value in d2.items():
         if key in d1:
             d1[key] += value
-            
+
             d1[key].sort()
         else:
             d1[key] = value
     #sorting values which is a list object
-    
+
 
     return d1
 
 #sepearting dictionary into term ranges
 def seperateDict(dict):
-    
+
     #a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-    a_f, g_l, m_s, t_z, spec = {}, {}, {}, {}, {} 
+    a_f, g_l, m_s, t_z, spec = {}, {}, {}, {}, {}
     #splitting indices
     for key, val in dict.items():
         if key[0] >= 'a' and key[0] <= 'f':
@@ -69,7 +69,7 @@ def seperateDict(dict):
             t_z[key] = val
         else:
             spec[key] = val
-        
+
     return a_f, g_l, m_s, t_z, spec
     #return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec
 
@@ -77,10 +77,10 @@ def sortAndWriteToDisk(partial_index, filenum):
     filename = f"index{filenum}.json"
     for key in partial_index:
         partial_index[key].sort()
-    
+
     with open(filename, 'w') as json_file:
         json.dump(partial_index, json_file, sort_keys = True)
-    
+
 
 def write_full_index(sep_dicts):
     all_file_names = ['a_f.json', 'g_l.json', 'm_s.json','t_z.json','spec.json']
@@ -118,7 +118,7 @@ def merge_files(numPartial, full_ind_files):
                                 full_index = dict()
                     except FileNotFoundError:
                         full_index = dict()
-                
+
                 merged_dict = mergeDict(full_index, current_dict)
                 with open(full_ind_files[i], 'w') as outfile:
                     json.dump(merged_dict, outfile)
@@ -127,7 +127,7 @@ def merge_files(numPartial, full_ind_files):
         except FileNotFoundError:
             pass
 
-    
+
 def writeM1(inverted_index, numFiles):
     with open('report.txt', 'w') as file:
         file.write("Number of Documents: " + str(numFiles) + "\n")
@@ -141,23 +141,23 @@ def writeReport(files, file_names):
     num_of_docs = files
     num_of_tokens = 0
     file_size = 0
-    
+
     #Generate stats report for deliverable
     with open('report.txt', 'w') as file:
 
         for name in file_names:
-            
+
             #getting data from index
             with open(name, "r+") as f:
                 d = json.load(f)
                 num_of_tokens += len(d.keys())
                 file_size += os.path.getsize(name) / 1024
-        
+
         #actually writing to file now
         file.write("Number of Documents: " + str(num_of_docs) +"\n")
         file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
         file.write("Total Size: " + str(file_size) + " kb\n")
-    
+
 
 def main():
     root_dir = 'DEV'
@@ -169,9 +169,9 @@ def main():
         directory = os.path.join(root_dir, dir)
 
         for f in os.listdir(directory):
-            
+
             cur_file = os.path.join(directory, f)
-            
+
             with open(cur_file, 'r') as file:
                 data = json.load(file)
                 content = data['content']
@@ -195,32 +195,24 @@ def main():
     writeM1(inverted_index, n)
 
 
-    
-        
+
+
 if __name__ == "__main__":
-<<<<<<< HEAD
-    #start = time.time()
-    #main()
-    #end = time.time()
-    #print("Time of execution is: ", (end-start))
-=======
     start = time.time()
     main()
     end = time.time()
     print("Time of execution is: ", (end-start))
->>>>>>> 6f3a0905cfdbbe60fa293700553ec40d709566d6
-    
+
     queries = ["cristina lopes", "machine learning", "ACM", "master of software engineering"]
-    
+
     with open("invertedIndex.json") as index:
-<<<<<<< HEAD
         print("loading inverted index")
         index = json.load(index)
-    
+
     with open("mapping.json") as mapFile:
         print("mapping file")
         mapping = json.load(mapFile)
-    
+
     newIndex = {}
 
     ps = PorterStemmer()
@@ -230,7 +222,7 @@ if __name__ == "__main__":
         stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
         for tok in stemmed:
             newIndex[tok] = index[tok]
-    
+
     im = InstanceMatrix(index, mapping)
     print("finished")
     docs = []
@@ -241,9 +233,9 @@ if __name__ == "__main__":
         temp = im.checkQuery(stemmed)
 
         docs.append(temp[0:5])
-    
+
     stats = []
-    
+
     #printing top 5 urls for eadch query
     for i in docs:
         urls = []
@@ -254,26 +246,11 @@ if __name__ == "__main__":
                 urls.append(data["url"])
 
         stats.append(urls)
-    
+
     for i in range (len(queries)):
         print(queries[i])
         for j in range(5):
             print(stats[i][j])
         print()
-    
-    
-=======
-        index = json.load(index)
-    
-    with open("mapping.json") as mapFile:
-        mapping = json.load(mapFile)
-        
-    ps = PorterStemmer()
-    im = InstanceMatrix(index, mapping)
-    for q in queries:
-        tokenized = word_tokenize(q)
-        #make sure tokens are lowercase
-        stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
-        print(im.checkQuery(stemmed))
-  
->>>>>>> 6f3a0905cfdbbe60fa293700553ec40d709566d6
+
+
