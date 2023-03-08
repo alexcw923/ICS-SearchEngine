@@ -7,6 +7,7 @@ from nltk.tokenize import word_tokenize
 from bs4 import BeautifulSoup
 
 from collections import defaultdict
+import posting
 
 def build(args):
     ROOT_DIR = 'DEV'

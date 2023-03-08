@@ -5,6 +5,7 @@ class Posting:
 
         #frequency of the number of pages appeared
         self.freq = freq
+        self.importantWord = False
     
     #updating freqency
     def updateFreq(self):
@@ -15,3 +16,9 @@ class Posting:
     
     def getURL(self):
         return self.url
+    
+    def hasImportantWord(self):
+        self.importantWord = True
+    
+    def getImportantWord(self):
+        return self.importantWord
