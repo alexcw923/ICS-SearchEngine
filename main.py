@@ -12,28 +12,12 @@ import argparse
 from build import build
 from search import search
 
+'''
 def checkToken(token):
     for c in token:
         if c.isalnum():
             return True
     return False
-
-def indexing(stem : list) -> dict:
-    #token : file
-    token_counts = defaultdict(int)
-    # partial_index = dict()
-
-    for s in stem:
-        token_counts[s] += 1
-    '''
-    for token, count in token_counts.items():
-        partial_index[token] = [filename + "," + str(count)]
-    '''
-    return token_counts
-
-#getting file name from full path
-def getFileName(path):
-    return Path(path).stem
 
 #merging two dictionaries
 #dict1 should be full index, dict2 is partial
@@ -56,33 +40,7 @@ def mergeDict(d1, d2):
 
     return d1
 
-#sepearting dictionary into term ranges
-def seperateDict(dict):
 
-    #a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-    a_f, g_l, m_s, t_z, spec = {}, {}, {}, {}, {}
-    #splitting indices
-    for key, val in dict.items():
-        if key[0] >= 'a' and key[0] <= 'f':
-            a_f[key] = val
-        elif key[0] >= 'g' and key[0] <= 'l':
-            g_l[key] = val
-        elif key[0] >= 'm' and key[0] <= 's':
-            m_s[key] = val
-        elif key[0] >= 't' and key[0] <= 'z':
-            t_z[key] = val
-        else:
-            spec[key] = val
-
-    return a_f, g_l, m_s, t_z, spec
-
-def sortAndWriteToDisk(partial_index, filenum):
-    filename = f"index{filenum}.json"
-    for key in partial_index:
-        partial_index[key].sort()
-
-    with open(filename, 'w') as json_file:
-        json.dump(partial_index, json_file, sort_keys = True)
 
 
 def write_full_index(sep_dicts):
@@ -130,14 +88,7 @@ def merge_files(numPartial, full_ind_files):
         except FileNotFoundError:
             pass
 
-
-def writeM1(inverted_index, numFiles):
-    with open('report.txt', 'w') as file:
-        file.write("Number of Documents: " + str(numFiles) + "\n")
-        file.write("Number of Unique Tokens: " + str(len(inverted_index)) + "\n")
-        file.write("Total Size: " + str(sys.getsizeof(inverted_index) / 1024) + " kb\n")
-
-#writing report to file
+writing report to file
 def writeReport(files, file_names):
 
     #holding stats
@@ -156,11 +107,11 @@ def writeReport(files, file_names):
                 num_of_tokens += len(d.keys())
                 file_size += os.path.getsize(name) / 1024
 
-        #actually writing to file now
+        #actually writing to file now1
         file.write("Number of Documents: " + str(num_of_docs) +"\n")
         file.write("Number of Unique Tokens: " + str(num_of_tokens) + "\n")
         file.write("Total Size: " + str(file_size) + " kb\n")
-
+'''
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

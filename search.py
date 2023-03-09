@@ -46,7 +46,7 @@ def search(args):
     # Printing NUM_SEARCH_RESULTS for each query
     for i in docs:
         urls = []
-
+        
         for j in i:
             with open('mapping.json') as file:
                 data = json.load(file)
