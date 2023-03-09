@@ -15,8 +15,9 @@ class InstanceMatrix:
             index (dict): index of the documents
         """
         for query, ls in index.items():
-            for id in ls:
-                self.matrix[self.queries == query, id[0]] = 1
+            #print(index)
+            for p in ls:
+                self.matrix[self.queries == query, p.docID] = 1
                 
     def checkQuery(self, query :list) -> list:
         """Check which documents contain all the words in the query.

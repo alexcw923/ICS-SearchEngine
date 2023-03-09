@@ -4,7 +4,7 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 from matrix import InstanceMatrix
-
+from posting import PostingDecoder
 QUERY_SEP = ";"
 NUM_SEARCH_RESULTS = 5
 
@@ -13,8 +13,8 @@ def search(args):
 
     with open("invertedIndex.json") as index:
         print("loading inverted index")
-        index = json.load(index)
-
+        index = json.load(index, cls=PostingDecoder)
+        #print(index)
     with open("mapping.json") as mapFile:
         print("mapping file")
         mapping = json.load(mapFile)
@@ -48,9 +48,9 @@ def search(args):
         urls = []
 
         for j in i:
-            with open(mapping[str(j)]) as file:
+            with open('mapping.json') as file:
                 data = json.load(file)
-                urls.append(data["url"])
+                urls.append(data[str(j)])
 
         stats.append(urls)
 
