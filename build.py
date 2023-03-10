@@ -16,7 +16,7 @@ def build(args):
 
     ROOT_DIR = 'ANALYST'
     ps = PorterStemmer()
-    
+
     mapped_files = {}
     n = 0
 
@@ -26,7 +26,7 @@ def build(args):
             json.dump({},file, cls=PostingEncoder)
 
     try:
-        
+
         for dir in os.listdir(ROOT_DIR):
             directory = os.path.join(ROOT_DIR, dir)
             partial_index = defaultdict(list)
@@ -59,7 +59,7 @@ def build(args):
                     # Map file to enumerated index and store in file
                     #cur_file
                     mapped_files[n] = data['url']
-                    
+
                     n = n + 1
 
             #seperating partial dict into term ranges
@@ -103,7 +103,7 @@ def writeM1(inverted_index, numFiles):
         file.write("Number of Documents: " + str(numFiles) + "\n")
         file.write("Number of Unique Tokens: " + str(len(inverted_index)) + "\n")
         file.write("Total Size: " + str(sys.getsizeof(inverted_index) / 1024) + " kb\n")
-        
+
 #sepearting dictionary into term ranges
 def seperateDict(dict):
 
@@ -140,7 +140,7 @@ def sortAndWriteToDisk(partial_index, fn):
         json.dump( old_index, new_file, cls=PostingEncoder, sort_keys=True)
 
 def find_key_positions(json_file):
-    
+
     with open(f"{json_file}.json", 'r') as f:
         file_contents = f.read()
 
@@ -195,4 +195,4 @@ def sortAndWriteToDisk(partial_index, filename):
         json.dump(partial_index, json_file, cls=Js)'''
 
 
-        
+
