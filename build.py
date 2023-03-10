@@ -5,7 +5,7 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 from bs4 import BeautifulSoup
-
+import math
 from collections import defaultdict
 from posting import Posting, PostingDecoder, PostingEncoder
 
@@ -74,17 +74,39 @@ def build(args):
         with open("mapping.json", 'w+') as mappings:
             #print(mapped_files)
             json.dump(mapped_files, mappings)
-    
+
+        for i in FILE_ALPH:
+            find_key_positions(f"{i}")
+            
+            with open(f"{i}.json", "r") as file:
+                data = json.load(file, cls=PostingEncoder)
+                for token, ls in data:
+                    for p in ls:
+                        p.freq = calcTfIdf(p.freq, len(ls), n+1)
+        
     with open("mapping.json", 'w+') as mappings:
             #print(mapped_files)
             json.dump(mapped_files, mappings)
-   
 
+    #making index of index for posistion
+    for i in FILE_ALPH:
+        find_key_positions(f"{i}")
+        
+        with open(f"{i}.json", "r") as file:
+            data = json.load(file, cls=PostingEncoder)
+            for token, ls in data:
+                for p in ls:
+                    p.freq = calcTfIdf(p.freq, len(ls), n+1)
+
+def calcTfIdf(freq, numOfPost, numOfDocs):
+    tf = 1 + math.log10(freq)
+    idf = math.log10(float(numOfDocs)/float(numOfPost))
+    
+    return tf * idf
 
 def indexing(stem : list) -> dict:
     #token : file
     token_counts = defaultdict(int)
-    partial_index = dict()
 
     for s in stem:
         token_counts[s] += 1
@@ -135,7 +157,32 @@ def sortAndWriteToDisk(partial_index, fn):
     with open(f"{fn}.json", 'w') as new_file:
         json.dump( old_index, new_file, cls=PostingEncoder, sort_keys=True)
 
+def find_key_positions(json_file):
+    
+    with open(f"{json_file}.json", 'r') as f:
+        file_contents = f.read()
 
+        # load the file contents into a dictionary
+        data = json.loads(file_contents)
+
+        # create a dictionary to store the key positions
+        key_positions = {}
+
+        # loop through the keys in the dictionary
+        for key in data.keys():
+
+            # determine the position of the key in the file
+            key_position = file_contents.find(f'"{key}"') + 1
+            #print(key_position)
+            # store the key and its position in the key_positions dictionary
+            key_positions[key] = key_position
+
+            # update the start position to the end of the current key
+            #start_position = key_position + len(key) + 4  # add 4 to account for the key/value delimiters and any spaces
+
+        # print the key positions dictionary
+        with open(f"{json_file}_pos.json", "w+") as file:
+            json.dump(key_positions,file)
 '''
 #sepearting dictionary into term ranges
 def seperateDict(dict):
@@ -165,15 +212,5 @@ def sortAndWriteToDisk(partial_index, filename):
     with open(filename, 'w') as json_file:
         json.dump(partial_index, json_file, cls=Js)'''
 
-def findTokenPos(indexName):
-    pos = 0
-    posDict = {}
 
-    with open(f"{indexName}.json", 'r') as file:
-        for line in file:
-            token,posting = line.strip().split(":")
-            posDict[token] = pos
-            pos += len(token)
-            pos += len(posting)
-            pos += 2
         

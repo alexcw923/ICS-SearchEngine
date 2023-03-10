@@ -4,7 +4,7 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 from matrix import InstanceMatrix
-from posting import PostingDecoder
+from posting import PostingDecoder, PostingEncoder
 QUERY_SEP = ";"
 NUM_SEARCH_RESULTS = 5
 FILE_ALPH = ['a_f', 'g_l', 'm_s', 't_z', 'spec']
@@ -40,12 +40,27 @@ def search(args):
             else:
                 to_open = FILE_ALPH[4]
 
-            with open(f"{to_open}.json", 'r+b') as file:
-                start = time.time()
-                index = json.load(file, cls=PostingDecoder)
-                #index = ijson.items(file, f"{q}.item")
-                newIndex[tok] = index[tok]
-                print('Load Time', time.time()-start)
+            with open(f"{to_open}_pos.json", 'r+b') as posFile:
+                
+                posIndex = json.load(posFile)
+                #getting possistion of toke
+
+                pos = posIndex[tok]
+
+                with open(f"{to_open}.json", 'r+b') as f:
+                    
+                    f.seek(pos)
+                    posting = f.readline().decode("utf-8").strip().split(":")[1]
+                    posting = posting.split(']')[0] + "]"
+
+                    d = "{" + '"' + str(tok) + '":'+ posting +"}"
+
+                    dumping = json.loads(d, cls=PostingDecoder)
+                    
+                    for token, postList in dumping.items():
+                        newIndex[token] = postList
+                    
+                
             
     # im = InstanceMatrix(index, mapping)
     im = InstanceMatrix(newIndex, mapping)

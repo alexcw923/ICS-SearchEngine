@@ -113,6 +113,9 @@ def writeReport(files, file_names):
         file.write("Total Size: " + str(file_size) + " kb\n")
 '''
 
+    
+
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
@@ -140,3 +143,35 @@ if __name__ == "__main__":
     #         index = json.load(file, cls=JSONDecoder)
     #         sorted_index = dict(sorted(index.items()))
     #         json.dump(sorted_index, file, cls=JSONEncoder)
+    # Open the JSON file in read mode
+    
+    #pos = find_key_positions("test.json")
+    #print(pos)
+
+    
+        
+    
+
+    """
+    with open('test.json', 'r') as f:
+
+        # Initialize variables
+        current_char = ''
+        current_pos = f.tell()
+
+        # Iterate over each line in the file
+        line = f.readline()
+
+        # Load the JSON object from the line
+        obj = json.loads(line)
+
+        # Get the first character of the object's key
+        char = list(obj.keys())[0][0]
+        
+
+        # Check if the character has changed
+        if char != current_char:
+            print(f"New character: {char} at position {current_pos}")
+            current_char = char
+            current_pos = f.tell()
+    """
