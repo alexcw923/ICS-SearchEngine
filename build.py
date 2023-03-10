@@ -139,33 +139,3 @@ def sortAndWriteToDisk(partial_index, fn):
 
     with open(f"{fn}.json", 'w') as new_file:
         json.dump( old_index, new_file, cls=PostingEncoder)
-
-
-'''
-#sepearting dictionary into term ranges
-def seperateDict(dict):
-
-    #a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-    a_f, g_l, m_s, t_z, spec = {}, {}, {}, {}, {}
-    #splitting indices
-    for key, val in dict.items():
-        if key[0] >= 'a' and key[0] <= 'f':
-            a_f[key] = val
-        elif key[0] >= 'g' and key[0] <= 'l':
-            g_l[key] = val
-        elif key[0] >= 'm' and key[0] <= 's':
-            m_s[key] = val
-        elif key[0] >= 't' and key[0] <= 'z':
-            t_z[key] = val
-        else:
-            spec[key] = val
-
-    return a_f, g_l, m_s, t_z, spec
-
-def sortAndWriteToDisk(partial_index, filename):
-    filename = f"{filename}.json"
-    # for key in partial_index:
-    #     partial_index[key].sort()
-
-    with open(filename, 'w') as json_file:
-        json.dump(partial_index, json_file, cls=Js)'''
