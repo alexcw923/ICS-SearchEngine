@@ -85,7 +85,9 @@ def build(args):
                         p.freq = calcTfIdf(p.freq, len(ls), n+1)
             with open(f"{i}.json", "w") as new_file:
                 json.dump(data, new_file, cls=PostingEncoder)
-        
+                
+        for i in FILE_ALPH:
+            find_key_positions(f"{i}")
     with open("mapping.json", 'w+') as mappings:
             #print(mapped_files)
             json.dump(mapped_files, mappings)

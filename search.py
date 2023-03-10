@@ -78,12 +78,12 @@ def get_search_results(queries: list):
                     d = "{" + '"' + str(tok) + '":'+ posting +"}"
 
                     dumping = json.loads(d, cls=PostingDecoder)
-
+                    print(dumping)
                     for token, postList in dumping.items():
                         newIndex[token] = postList
 
 
-
+    #print(newIndex)
     # im = InstanceMatrix(index, mapping)
     im = InstanceMatrix(newIndex, mapping)
     #print("finished")
@@ -101,3 +101,15 @@ def search(args):
     search_results = get_search_results(queries)
     print_search_results(queries, search_results)
 
+def searchDoc(query):
+    query_tfidf = defaultdict(float)
+    for word in query.split():
+        query_tfidf[word] += 1
+    for word in query_tfidf:
+        query_tfidf[word] *= idf[word]
+    scores = []
+    for i, document in enumerate(documents):
+        similarity = cosine_similarity(query_tfidf, tfidf_scores[i])
+        scores.append((similarity, document))
+    scores.sort(reverse=True)
+    return scores
