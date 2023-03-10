@@ -3,29 +3,29 @@ from collections import defaultdict
 from posting import Posting
 
 class TFIDFSearch:
-    def __init__(self, inverted_index):
-        self.inverted_index = inverted_index
-        self.document_frequency = {}
+    def __init__(self, index):
+        self.index = index
+        self.docFreq = {}
         self.idf = {}
-        self.tfidf_scores = {}
-        self.compute_tfidf()
+        self.scores = {}
+        self._compute_tfidf()
 
 
-    def compute_tfidf(self):
-        for term, posting_list in self.inverted_index.items():
-            self.document_frequency[term] = len(posting_list)
+    def _compute_tfidf(self):
+        for term, posting_list in self.index.items():
+            self.docFreq[term] = len(posting_list)
             for posting in posting_list:
-                if posting.docID not in self.tfidf_scores:
-                    self.tfidf_scores[posting.docID] = defaultdict(float)
-                self.tfidf_scores[posting.docID][term] = posting.freq * math.log(len(self.inverted_index) / self.document_frequency[term])
-        for term, freq in self.document_frequency.items():
-            self.idf[term] = math.log(len(self.inverted_index) / freq)
+                if posting.docID not in self.scores:
+                    self.scores[posting.docID] = defaultdict(float)
+                self.scores[posting.docID][term] = posting.freq * math.log(len(self.index) / self.docFreq[term])
+        for term, freq in self.docFreq.items():
+            self.idf[term] = math.log(len(self.index) / freq)
 
     def cosine_similarity(self, v1, v2):
-        dot_product = sum(v1[term] * v2[term] for term in v1 if term in v2)
+        res = sum(v1[term] * v2[term] for term in v1 if term in v2)
         v1_norm = math.sqrt(sum(v1[term]**2 for term in v1))
         v2_norm = math.sqrt(sum(v2[term]**2 for term in v2))
-        return dot_product / (v1_norm * v2_norm)
+        return res / (v1_norm * v2_norm)
 
     def search(self, query : list):
         query_tfidf = defaultdict(float)
@@ -40,16 +40,14 @@ class TFIDFSearch:
             except KeyError:
                 continue
         scores = []
-        for docID, tfidf in self.tfidf_scores.items():
+        for docID, tfidf in self.scores.items():
             similarity = self.cosine_similarity(query_tfidf, tfidf)
             scores.append((similarity, docID))
         scores.sort(reverse=True)
-        
         return scores
 
 if __name__ ==  "__main__":
-    # Sample inverted index
-    # Sample inverted index
+    #testing
     inverted_index = {
         "brown": [Posting(0, 2), Posting(1, 1), Posting(2, 2), Posting(3, 2), Posting(4, 1), Posting(5, 1)],
         "fox": [Posting(0, 1), Posting(1, 1), Posting(3, 1)],

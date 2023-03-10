@@ -1,10 +1,8 @@
-import json
-import sys
+import json, time, mmap
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
-from matrix import InstanceMatrix
-from posting import PostingDecoder, PostingEncoder
+from posting import PostingDecoder
 from tfidf import TFIDFSearch
 QUERY_SEP = ";"
 NUM_SEARCH_RESULTS = 5
@@ -34,7 +32,6 @@ def print_search_results(queries, search_results):
 
 def search(args):
     queries = args.query.split(QUERY_SEP)
-
     search_results = get_search_results(queries)
     print_search_results(queries, search_results)
     
@@ -42,14 +39,6 @@ def search(args):
 
 def get_search_results(queries: list):
     docs = []
-
-    # with open("invertedIndex.json") as index:
-    #     print("loading inverted index")
-    #     index = json.load(index, cls=PostingDecoder)
-        #print(index)
-    with open("mapping.json") as mapFile:
-        #print("mapping file")
-        mapping = json.load(mapFile)
 
     newIndex = {}
 
@@ -72,37 +61,38 @@ def get_search_results(queries: list):
             else:
                 to_open = FILE_ALPH[4]
 
-            with open(f"{to_open}_pos.json", 'r+b') as posFile:
-                # try:
-                    posIndex = json.load(posFile)
-                    #getting possistion of toke
-                    try:
-                        pos = posIndex[tok]
-                    except KeyError:
-                        no_search_result.append(tok)
-                        continue
-                    with open(f"{to_open}.json", 'r+b') as f:
+            with open(f"{to_open}_pos.json", 'rb') as posFile:
+                start = time.time()
+                posIndex = json.load(posFile)
+                print('Posistional', time.time()-start)
+                #json_string = mmap.mmap(posFile.fileno(), 0, access=mmap.ACCESS_READ)
+                #getting possistion of toke
+                #json_string = json_string.read().decode('utf-8')
+                #posIndex = json.loads(json_string)
+                try:
+                    pos = posIndex[tok]
+                except KeyError:
+                    no_search_result.append(tok)
+                    continue
+                with open(f"{to_open}.json", 'r+b') as f:
+                    mapped_file = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+                    mapped_file.seek(pos)
+                    #f.seek(pos)
+                    start = time.time()
+                    posting = mapped_file.readline().decode("utf-8").strip().split(":")[1]
+                    
+                    posting = posting.split(']')[0] + "]"
+                    print('Splitting', time.time()-start)
+                    # d = "{" + '"' + str(tok) + '":'+ posting +"}"
 
-                        f.seek(pos)
-                        
-                        posting = f.readline().decode("utf-8").strip().split(":")[1]
-                        posting = posting.split(']')[0] + "]"
-
-                        d = "{" + '"' + str(tok) + '":'+ posting +"}"
-
-                        dumping = json.loads(d, cls=PostingDecoder)
-                        #print(dumping)
-                        for token, postList in dumping.items():
-                            newIndex[token] = postList
-                # except KeyError:
-                #     print(f"No Search Results")
-                #     sys.exit()
-
-
-    #print(newIndex)
-    # im = InstanceMatrix(index, mapping)
+                    d = '{{"{}": {}}}'.format(tok, posting)
+                    start = time.time()
+                    dumping = json.loads(d, cls=PostingDecoder)
+                    print('Dumping', time.time()- start)
+                    for token, postList in dumping.items():
+                        newIndex[token] = postList
+                    
     tfidf = TFIDFSearch(newIndex)
-    #print("finished")
     for q in queries:
         tokenized = word_tokenize(q)
         #make sure tokens are lowercase

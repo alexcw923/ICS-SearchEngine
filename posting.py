@@ -8,10 +8,10 @@ class Posting():
         #url name
         self.docID = docID
         self.freq = freq
-        # self.tfIdf = tfIdf
+        #self.tfIdf = tfIdf
         
         #frequency of the number of pages appeared
-        #self.importantWord = False
+        #self.importantWord = importantWord
         #W x,y = term frequecy X log(total number of document/number of document containing x)
     #updating freqency
     def __str__(self):
@@ -20,11 +20,7 @@ class Posting():
     def __repr__(self) -> str:
         return f"Posting<DocID:{self.docID}, Freq:{self.freq}>"
     
-    def updateFreq(self):
-        self.freq += 1
     
-    def getFreq(self):
-        return self.freq
     #FIXME backwardfs compat with search if key = 
     # def __getitem__(self, key):
     #     if key==0:
