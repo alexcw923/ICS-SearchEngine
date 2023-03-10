@@ -16,7 +16,7 @@ def build(args):
 
     ROOT_DIR = 'ANALYST'
     ps = PorterStemmer()
-    
+
     mapped_files = {}
     n = 0
 
@@ -26,7 +26,7 @@ def build(args):
             json.dump({},file, cls=PostingEncoder)
 
     try:
-        
+
         for dir in os.listdir(ROOT_DIR):
             directory = os.path.join(ROOT_DIR, dir)
             partial_index = defaultdict(list)
@@ -59,7 +59,7 @@ def build(args):
                     # Map file to enumerated index and store in file
                     #cur_file
                     mapped_files[n] = data['url']
-                    
+
                     n = n + 1
 
             #seperating partial dict into term ranges
@@ -76,8 +76,7 @@ def build(args):
             json.dump(mapped_files, mappings)
 
         for i in FILE_ALPH:
-            find_key_positions(f"{i}")
-            
+
             with open(f"{i}.json", "r") as file:
                 data = json.load(file, cls=PostingDecoder)
                 for token, ls in data.items():
@@ -85,7 +84,7 @@ def build(args):
                         p.freq = calcTfIdf(p.freq, len(ls), n+1)
             with open(f"{i}.json", "w") as new_file:
                 json.dump(data, new_file, cls=PostingEncoder)
-                
+
         for i in FILE_ALPH:
             find_key_positions(f"{i}")
     with open("mapping.json", 'w+') as mappings:
@@ -94,8 +93,7 @@ def build(args):
 
     #making index of index for posistion
     for i in FILE_ALPH:
-        find_key_positions(f"{i}")
-        
+
         with open(f"{i}.json", "r") as file:
             data = json.load(file, cls=PostingDecoder)
             #new_Index = defaultdict(list)
@@ -104,13 +102,13 @@ def build(args):
                     p.freq = calcTfIdf(p.freq, len(ls), n+1)
         with open(f"{i}.json", "w") as new_file:
             json.dump(data, new_file, cls=PostingEncoder)
-        
+
     for i in FILE_ALPH:
         find_key_positions(f"{i}")
 def calcTfIdf(freq, numOfPost, numOfDocs):
     tf = 1 + math.log10(freq)
     idf = math.log10(float(numOfDocs)/float(numOfPost))
-    
+
     return tf * idf
 
 def indexing(stem : list) -> dict:
@@ -130,7 +128,7 @@ def writeM1(inverted_index, numFiles):
         file.write("Number of Documents: " + str(numFiles) + "\n")
         file.write("Number of Unique Tokens: " + str(len(inverted_index)) + "\n")
         file.write("Total Size: " + str(sys.getsizeof(inverted_index) / 1024) + " kb\n")
-        
+
 #sepearting dictionary into term ranges
 def seperateDict(dict):
 
@@ -167,7 +165,7 @@ def sortAndWriteToDisk(partial_index, fn):
         json.dump( old_index, new_file, cls=PostingEncoder, sort_keys=True)
 
 def find_key_positions(json_file):
-    
+
     with open(f"{json_file}.json", 'r') as f:
         file_contents = f.read()
 
@@ -222,4 +220,4 @@ def sortAndWriteToDisk(partial_index, filename):
         json.dump(partial_index, json_file, cls=Js)'''
 
 
-        
+
