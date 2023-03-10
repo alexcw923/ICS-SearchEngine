@@ -8,6 +8,27 @@ QUERY_SEP = ";"
 NUM_SEARCH_RESULTS = 5
 FILE_ALPH = ['a_f', 'g_l', 'm_s', 't_z', 'spec']
 
+MAPPING = "mapping.json"
+
+def _preload_mapping():
+    mapping = None
+    with open(MAPPING) as file:
+        mapping = json.load(file)
+
+    return mapping
+
+def _preload_positional_json():
+    positional_file_names = [f"{f}.json" for f in FILE_ALPH]
+    positional_file_pointers = [open(f) for f in positional_file_names]
+
+    positional_json = {FILE_ALPH[i]:json.load(fp) for i, fp in enumerate(positional_file_pointers)}
+
+    return positional_json
+
+
+def preload():
+    return {"mapping": _preload_mapping(), "positional": _preload_positional_json()}
+
 def print_search_results(queries, search_results):
     assert len(queries) == len(search_results)
     stats = []
