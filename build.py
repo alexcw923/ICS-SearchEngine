@@ -105,7 +105,8 @@ def build(args):
         with open(f"{i}.json", "w") as new_file:
             json.dump(data, new_file, cls=PostingEncoder)
         
-
+    for i in FILE_ALPH:
+        find_key_positions(f"{i}")
 def calcTfIdf(freq, numOfPost, numOfDocs):
     tf = 1 + math.log10(freq)
     idf = math.log10(float(numOfDocs)/float(numOfPost))
