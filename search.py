@@ -48,19 +48,6 @@ def print_search_results(mapping, queries, search_results):
         print()
 
 
-
-def search(args):
-    running = True
-    mapping, positional_indexes = preload()
-
-    while running:
-        query = input("Search: ")
-        queries = [query]
-
-        search_results = get_search_results(positional_indexes, queries)
-        print_search_results(mapping, queries, search_results)
-
-
 def get_search_results(positional_index: dict, queries: list):
     docs = []
 
@@ -118,3 +105,15 @@ def get_search_results(positional_index: dict, queries: list):
             print(f"{q} ", end ="")
         print()
     return docs
+
+def search(args):
+    running = True
+    mapping, positional_indexes = preload()
+
+    while running:
+        query = input("Search: ")
+        queries = [query]
+
+        search_results = get_search_results(positional_indexes, queries)
+        print_search_results(mapping, queries, search_results)
+
