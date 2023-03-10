@@ -5,16 +5,9 @@ import pickle
 
 class Posting():
     def __init__(self, docID, freq):
-        #dict.__init__(self, docID = docID,freq = freq)
-        #url name
         self.docID = docID
         self.freq = freq
-        # self.tfIdf = tfIdf
         
-        #frequency of the number of pages appeared
-        # self.importantWord = False
-        #W x,y = term frequecy X log(total number of document/number of document containing x)
-    #updating freqency
     def __str__(self):
         return f"{self.docID},{self.freq}"
     

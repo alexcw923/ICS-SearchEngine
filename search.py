@@ -3,7 +3,7 @@ import time
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
-from matrix import InstanceMatrix
+from matrix import InstanceMatrix, InvertedIndex
 from posting import PostingDecoder, PickleDecoder
 
 QUERY_SEP = ";"
@@ -42,16 +42,17 @@ def search(args):
                 to_open = FILE_ALPH[4]
 
             with open(f"{to_open}.pkl", 'r+b') as file:
-                start = time.time()
+                # start = time.time()
                 decoder = PickleDecoder(file)
                 index = decoder.load()
                 # index = json.load(file, cls=PostingDecoder)
                 #index = ijson.items(file, f"{q}.item")
                 newIndex[tok] = index[tok]
-                print('Load Time', time.time()-start)
+                # print('Load Time', time.time()-start)
             
     # im = InstanceMatrix(index, mapping)
-    im = InstanceMatrix(newIndex, mapping)
+    # im = InstanceMatrix(newIndex, mapping)
+    im = InvertedIndex(newIndex)
     #print("finished")
     docs = []
     for  q in queries:
