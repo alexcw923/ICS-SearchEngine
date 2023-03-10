@@ -42,7 +42,7 @@ class PostingDecoder(JSONDecoder):
             postings_dict[key] = []
             for posting_str in value:
                 docID, freq = posting_str.split(',')
-                postings_dict[key].append(Posting(int(docID), int(freq)))
+                postings_dict[key].append(Posting(int(docID), float(freq)))
         return postings_dict
     
 

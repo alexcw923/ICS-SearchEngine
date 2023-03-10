@@ -50,6 +50,7 @@ def search(args):
                 with open(f"{to_open}.json", 'r+b') as f:
                     
                     f.seek(pos)
+                    
                     posting = f.readline().decode("utf-8").strip().split(":")[1]
                     posting = posting.split(']')[0] + "]"
 

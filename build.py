@@ -14,7 +14,7 @@ FILE_ALPH = ['a_f', 'g_l', 'm_s', 't_z', 'spec']
 
 def build(args):
 
-    ROOT_DIR = 'DEV'
+    ROOT_DIR = 'ANALYST'
     ps = PorterStemmer()
     
     mapped_files = {}
@@ -79,10 +79,12 @@ def build(args):
             find_key_positions(f"{i}")
             
             with open(f"{i}.json", "r") as file:
-                data = json.load(file, cls=PostingEncoder)
-                for token, ls in data:
+                data = json.load(file, cls=PostingDecoder)
+                for token, ls in data.items():
                     for p in ls:
                         p.freq = calcTfIdf(p.freq, len(ls), n+1)
+            with open(f"{i}.json", "w") as new_file:
+                json.dump(data, new_file, cls=PostingEncoder)
         
     with open("mapping.json", 'w+') as mappings:
             #print(mapped_files)
@@ -93,10 +95,14 @@ def build(args):
         find_key_positions(f"{i}")
         
         with open(f"{i}.json", "r") as file:
-            data = json.load(file, cls=PostingEncoder)
-            for token, ls in data:
+            data = json.load(file, cls=PostingDecoder)
+            #new_Index = defaultdict(list)
+            for token, ls in data.items():
                 for p in ls:
                     p.freq = calcTfIdf(p.freq, len(ls), n+1)
+        with open(f"{i}.json", "w") as new_file:
+            json.dump(data, new_file, cls=PostingEncoder)
+        
 
 def calcTfIdf(freq, numOfPost, numOfDocs):
     tf = 1 + math.log10(freq)
