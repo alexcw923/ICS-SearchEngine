@@ -62,9 +62,8 @@ def get_search_results(queries: list):
                 to_open = FILE_ALPH[4]
 
             with open(f"{to_open}_pos.json", 'rb') as posFile:
-                start = time.time()
+                
                 posIndex = json.load(posFile)
-                print('Posistional', time.time()-start)
                 #json_string = mmap.mmap(posFile.fileno(), 0, access=mmap.ACCESS_READ)
                 #getting possistion of toke
                 #json_string = json_string.read().decode('utf-8')
@@ -78,17 +77,14 @@ def get_search_results(queries: list):
                     mapped_file = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
                     mapped_file.seek(pos)
                     #f.seek(pos)
-                    start = time.time()
-                    posting = mapped_file.readline().decode("utf-8").strip().split(":")[1]
-                    
-                    posting = posting.split(']')[0] + "]"
-                    print('Splitting', time.time()-start)
-                    # d = "{" + '"' + str(tok) + '":'+ posting +"}"
+                    posting = mapped_file.readline().decode("utf-8").strip()
+                    posting = posting[:posting.find(']')+1]
 
-                    d = '{{"{}": {}}}'.format(tok, posting)
-                    start = time.time()
+                    d = "{" + '"' + posting +"}"
+
+                    #d = '{{"{}": {}}}'.format(tok, posting)
                     dumping = json.loads(d, cls=PostingDecoder)
-                    print('Dumping', time.time()- start)
+                    
                     for token, postList in dumping.items():
                         newIndex[token] = postList
                     
