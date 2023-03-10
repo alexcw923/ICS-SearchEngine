@@ -1,4 +1,4 @@
-import json, ijson
+import json
 import time
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
@@ -9,8 +9,29 @@ QUERY_SEP = ";"
 NUM_SEARCH_RESULTS = 5
 FILE_ALPH = ['a_f', 'g_l', 'm_s', 't_z', 'spec']
 
-def search(args):
-    queries = args.query.split(QUERY_SEP)
+def print_search_results(queries, search_results):
+    assert len(queries) == len(search_results)
+    stats = []
+    # Printing NUM_SEARCH_RESULTS for each query
+    for i in search_results:
+        urls = []
+
+        for j in i[0:NUM_SEARCH_RESULTS]:
+            with open('mapping.json') as file:
+                data = json.load(file)
+                urls.append(data[str(j)])
+
+        stats.append(urls)
+
+    for i in range(len(search_results)):
+        print(f'Search results for "{queries[i]}"')
+        for result_number, j in enumerate(range(min(NUM_SEARCH_RESULTS, len(search_results))), 1):
+            print(f"{result_number}. {stats[i][j]}")
+        print()
+
+
+def get_search_results(queries: list):
+    docs = []
 
     # with open("invertedIndex.json") as index:
     #     print("loading inverted index")
@@ -21,7 +42,7 @@ def search(args):
         mapping = json.load(mapFile)
 
     newIndex = {}
-        
+
     ps = PorterStemmer()
     for q in queries:
         #print(q)
@@ -41,14 +62,14 @@ def search(args):
                 to_open = FILE_ALPH[4]
 
             with open(f"{to_open}_pos.json", 'r+b') as posFile:
-                
+
                 posIndex = json.load(posFile)
                 #getting possistion of toke
 
                 pos = posIndex[tok]
 
                 with open(f"{to_open}.json", 'r+b') as f:
-                    
+
                     f.seek(pos)
                     
                     posting = f.readline().decode("utf-8").strip().split(":")[1]
@@ -57,40 +78,26 @@ def search(args):
                     d = "{" + '"' + str(tok) + '":'+ posting +"}"
 
                     dumping = json.loads(d, cls=PostingDecoder)
-                    
+
                     for token, postList in dumping.items():
                         newIndex[token] = postList
-                    
-                
-            
+
+
+
     # im = InstanceMatrix(index, mapping)
     im = InstanceMatrix(newIndex, mapping)
     #print("finished")
-    docs = []
-    for  q in queries:
+    for q in queries:
         tokenized = word_tokenize(q)
         #make sure tokens are lowercase
         stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
-        temp = im.checkQuery(stemmed)
+        docs.append(im.checkQuery(stemmed))
 
-        docs.append(temp[0:5])
+    return docs
 
-    stats = []
+def search(args):
+    queries = args.query.split(QUERY_SEP)
 
-    # Printing NUM_SEARCH_RESULTS for each query
-    for i in docs:
-        urls = []
-        
-        for j in i:
-            with open('mapping.json') as file:
-                data = json.load(file)
-                urls.append(data[str(j)])
-
-        stats.append(urls)
-
-    for i in range (len(queries)):
-        print(f'Search results for "{queries[i]}"')
-        for result_number, j in enumerate(range(NUM_SEARCH_RESULTS), 1):
-            print(f"{result_number}. {stats[i][j]}")
-        print()
+    search_results = get_search_results(queries)
+    print_search_results(queries, search_results)
 
