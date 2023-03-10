@@ -42,7 +42,7 @@ def build(args):
                     # Parse HTML
                     soup = BeautifulSoup(content, 'lxml')
                     text = soup.get_text()
-
+                    
                     # Tokenize, stem with NLTK
                     # Stemming with only lower case tokens + other filters
                     tokenized = word_tokenize(text)
@@ -77,41 +77,14 @@ def build(args):
 
         for i in FILE_ALPH:
             find_key_positions(f"{i}")
-            
-            with open(f"{i}.json", "r") as file:
-                data = json.load(file, cls=PostingDecoder)
-                for token, ls in data.items():
-                    for p in ls:
-                        p.freq = calcTfIdf(p.freq, len(ls), n+1)
-            with open(f"{i}.json", "w") as new_file:
-                json.dump(data, new_file, cls=PostingEncoder)
-                
-        for i in FILE_ALPH:
-            find_key_positions(f"{i}")
     with open("mapping.json", 'w+') as mappings:
             #print(mapped_files)
             json.dump(mapped_files, mappings)
 
     #making index of index for posistion
-    for i in FILE_ALPH:
-        find_key_positions(f"{i}")
-        
-        with open(f"{i}.json", "r") as file:
-            data = json.load(file, cls=PostingDecoder)
-            #new_Index = defaultdict(list)
-            for token, ls in data.items():
-                for p in ls:
-                    p.freq = calcTfIdf(p.freq, len(ls), n+1)
-        with open(f"{i}.json", "w") as new_file:
-            json.dump(data, new_file, cls=PostingEncoder)
         
     for i in FILE_ALPH:
         find_key_positions(f"{i}")
-def calcTfIdf(freq, numOfPost, numOfDocs):
-    tf = 1 + math.log10(freq)
-    idf = math.log10(float(numOfDocs)/float(numOfPost))
-    
-    return tf * idf
 
 def indexing(stem : list) -> dict:
     #token : file

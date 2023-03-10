@@ -11,7 +11,7 @@ class Posting():
         # self.tfIdf = tfIdf
         
         #frequency of the number of pages appeared
-        # self.importantWord = False
+        #self.importantWord = False
         #W x,y = term frequecy X log(total number of document/number of document containing x)
     #updating freqency
     def __str__(self):

@@ -1,10 +1,11 @@
 import json
-import time
+import sys
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 from matrix import InstanceMatrix
 from posting import PostingDecoder, PostingEncoder
+from tfidf import TFIDFSearch
 QUERY_SEP = ";"
 NUM_SEARCH_RESULTS = 5
 FILE_ALPH = ['a_f', 'g_l', 'm_s', 't_z', 'spec']
@@ -19,7 +20,7 @@ def print_search_results(queries, search_results):
         for j in i[0:NUM_SEARCH_RESULTS]:
             with open('mapping.json') as file:
                 data = json.load(file)
-                urls.append(data[str(j)])
+                urls.append(data[str(j[1])])
 
         stats.append(urls)
     
@@ -28,6 +29,15 @@ def print_search_results(queries, search_results):
         for result_number, j in enumerate(range(min(NUM_SEARCH_RESULTS, len(search_results[i]))), 1):
             print(f"{result_number}. {stats[i][j]}")
         print()
+
+
+
+def search(args):
+    queries = args.query.split(QUERY_SEP)
+
+    search_results = get_search_results(queries)
+    print_search_results(queries, search_results)
+    
 
 
 def get_search_results(queries: list):
@@ -49,6 +59,7 @@ def get_search_results(queries: list):
         tokenized = word_tokenize(q)
         #make sure tokens are lowercase
         stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
+        no_search_result = []
         for tok in stemmed:
             if tok[0] >= 'a' and tok[0] <= 'f':
                 to_open = FILE_ALPH[0]
@@ -62,54 +73,45 @@ def get_search_results(queries: list):
                 to_open = FILE_ALPH[4]
 
             with open(f"{to_open}_pos.json", 'r+b') as posFile:
+                # try:
+                    posIndex = json.load(posFile)
+                    #getting possistion of toke
+                    try:
+                        pos = posIndex[tok]
+                    except KeyError:
+                        no_search_result.append(tok)
+                        continue
+                    with open(f"{to_open}.json", 'r+b') as f:
 
-                posIndex = json.load(posFile)
-                #getting possistion of toke
+                        f.seek(pos)
+                        
+                        posting = f.readline().decode("utf-8").strip().split(":")[1]
+                        posting = posting.split(']')[0] + "]"
 
-                pos = posIndex[tok]
+                        d = "{" + '"' + str(tok) + '":'+ posting +"}"
 
-                with open(f"{to_open}.json", 'r+b') as f:
-
-                    f.seek(pos)
-                    
-                    posting = f.readline().decode("utf-8").strip().split(":")[1]
-                    posting = posting.split(']')[0] + "]"
-
-                    d = "{" + '"' + str(tok) + '":'+ posting +"}"
-
-                    dumping = json.loads(d, cls=PostingDecoder)
-                    #print(dumping)
-                    for token, postList in dumping.items():
-                        newIndex[token] = postList
+                        dumping = json.loads(d, cls=PostingDecoder)
+                        #print(dumping)
+                        for token, postList in dumping.items():
+                            newIndex[token] = postList
+                # except KeyError:
+                #     print(f"No Search Results")
+                #     sys.exit()
 
 
     #print(newIndex)
     # im = InstanceMatrix(index, mapping)
-    im = InstanceMatrix(newIndex, mapping)
+    tfidf = TFIDFSearch(newIndex)
     #print("finished")
     for q in queries:
         tokenized = word_tokenize(q)
         #make sure tokens are lowercase
         stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
-        docs.append(im.checkQuery(stemmed))
-
+        docs.append(tfidf.search(stemmed))
+    
+    if len(no_search_result) != 0:
+        print("No Search Result for the query: ", end='')
+        for q in no_search_result:
+            print(f"{q} ", end ="")
+        print()
     return docs
-
-def search(args):
-    queries = args.query.split(QUERY_SEP)
-
-    search_results = get_search_results(queries)
-    print_search_results(queries, search_results)
-
-def searchDoc(query):
-    query_tfidf = defaultdict(float)
-    for word in query.split():
-        query_tfidf[word] += 1
-    for word in query_tfidf:
-        query_tfidf[word] *= idf[word]
-    scores = []
-    for i, document in enumerate(documents):
-        similarity = cosine_similarity(query_tfidf, tfidf_scores[i])
-        scores.append((similarity, document))
-    scores.sort(reverse=True)
-    return scores
