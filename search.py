@@ -1,4 +1,4 @@
-import json
+import json, ijson
 import sys
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
@@ -74,17 +74,23 @@ def get_search_results(queries: list):
 
             with open(f"{to_open}_pos.json", 'r+b') as posFile:
                 # try:
-                    posIndex = json.load(posFile)
+                    # posIndex = json.load(posFile)
                     #getting possistion of toke
                     try:
-                        pos = posIndex[tok]
+                        # pos = posIndex[tok]
+                        # FIXME: add error checking
+                        obj = ijson.items(posFile, tok)
+                        # pos = (o for o in obj)
+                        pos = next(obj)
+                        print(pos)
+
                     except KeyError:
                         no_search_result.append(tok)
                         continue
                     with open(f"{to_open}.json", 'r+b') as f:
 
                         f.seek(pos)
-                        
+
                         posting = f.readline().decode("utf-8").strip().split(":")[1]
                         posting = posting.split(']')[0] + "]"
 
