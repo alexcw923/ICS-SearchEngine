@@ -47,9 +47,6 @@ def get_search_results(queries: list):
     #     print("loading inverted index")
     #     index = json.load(index, cls=PostingDecoder)
         #print(index)
-    with open("mapping.json") as mapFile:
-        #print("mapping file")
-        mapping = json.load(mapFile)
 
     newIndex = {}
 

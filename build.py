@@ -14,7 +14,7 @@ FILE_ALPH = ['a_f', 'g_l', 'm_s', 't_z', 'spec']
 
 def build(args):
 
-    ROOT_DIR = 'ANALYST'
+    ROOT_DIR = 'DEV'
     ps = PorterStemmer()
 
     mapped_files = {}
