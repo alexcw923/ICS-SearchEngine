@@ -1,6 +1,7 @@
 from json import JSONEncoder, JSONDecoder
 import json
 from collections import defaultdict
+import pickle
 
 class Posting():
     def __init__(self, docID, freq):
@@ -29,7 +30,22 @@ class Posting():
     # def __getitem__(self, key):
     #     if key==0:
     #         return self.docID
-
+    
+class PickleEncoder(pickle.Pickler):
+    def default(self, obj : Posting):
+        return f"{obj.docID},{obj.freq}".encode()
+    
+class PickleDecoder(pickle.Unpickler):
+    def decode(self, data):
+        postings_dict = {}
+        for key, value in data.items():
+            postings_dict[key] = []
+            for posting_str in value:
+                docID, freq = posting_str.split(',')
+                postings_dict[key].append(Posting(int(docID), int(freq)))
+        return postings_dict
+    
+    
 class PostingEncoder(JSONEncoder):
     def default(self, obj : Posting):
         return f"{obj.docID},{obj.freq}"
@@ -52,4 +68,5 @@ if __name__ == '__main__':
     index['a'].append(Posting(1,1))
     dump = json.dumps(index, cls=PostingEncoder)
     load = json.loads(dump, cls=PostingDecoder)
+    
     print(type(load['a'][0]))

@@ -4,7 +4,8 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 from matrix import InstanceMatrix
-from posting import PostingDecoder
+from posting import PostingDecoder, PickleDecoder
+
 QUERY_SEP = ";"
 NUM_SEARCH_RESULTS = 5
 FILE_ALPH = ['a_f', 'g_l', 'm_s', 't_z', 'spec']
@@ -40,9 +41,11 @@ def search(args):
             else:
                 to_open = FILE_ALPH[4]
 
-            with open(f"{to_open}.json", 'r+b') as file:
+            with open(f"{to_open}.pkl", 'r+b') as file:
                 start = time.time()
-                index = json.load(file, cls=PostingDecoder)
+                decoder = PickleDecoder(file)
+                index = decoder.load()
+                # index = json.load(file, cls=PostingDecoder)
                 #index = ijson.items(file, f"{q}.item")
                 newIndex[tok] = index[tok]
                 print('Load Time', time.time()-start)

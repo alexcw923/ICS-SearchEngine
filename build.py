@@ -7,11 +7,13 @@ from nltk.tokenize import word_tokenize
 from bs4 import BeautifulSoup
 
 from collections import defaultdict
-from posting import Posting, PostingDecoder, PostingEncoder
+from posting import Posting, PostingDecoder, PostingEncoder, PickleDecoder, PickleEncoder
+import numpy as np
+import pickle
 
 FILE_ALPH = ['a_f', 'g_l', 'm_s', 't_z', 'spec']
 
-
+   
 def build(args):
 
     ROOT_DIR = 'DEV'
@@ -20,18 +22,22 @@ def build(args):
     mapped_files = {}
     n = 0
 
-    # fp = []
+    fp = []
     for i in FILE_ALPH:
-        with open(f"{i}.json", "w+") as file:
-            json.dump({},file, cls=PostingEncoder)
+        with open(f"{i}.pkl", "wb+") as file:
+            encoder = PickleEncoder(file)
+            encoder.dump({})
 
     try:
         
         for dir in os.listdir(ROOT_DIR):
             directory = os.path.join(ROOT_DIR, dir)
             partial_index = defaultdict(list)
+            if directory == 'DEV/.DS_Store':
+                continue
             for f in os.listdir(directory):
-
+                # if f == '.DS_Store': # Skip over the '.DS_Store' file
+                #     continue
                 cur_file = os.path.join(directory, f)
 
                 with open(cur_file, 'r') as file:
@@ -121,8 +127,9 @@ def seperateDict(dict):
 
 def sortAndWriteToDisk(partial_index, fn):
     try:
-        with open(f"{fn}.json" , 'r') as old_file:
-            old_index = json.load(old_file, cls=PostingDecoder)
+        with open(f"{fn}.pkl" , 'rb') as old_file:
+            decoder = PickleDecoder(old_file)
+            old_index = decoder.load()
     except FileNotFoundError:
         old_index = dict()
 
@@ -132,38 +139,12 @@ def sortAndWriteToDisk(partial_index, fn):
         else:
             old_index[token] = postList
 
-    with open(f"{fn}.json", 'w') as new_file:
-        json.dump( old_index, new_file, cls=PostingEncoder, sort_keys=True)
+    with open(f"{fn}.pkl", 'wb') as new_file:
+        encoder = PickleEncoder(new_file)
+        encoder.dump(old_index)
 
 
-'''
-#sepearting dictionary into term ranges
-def seperateDict(dict):
 
-    #a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, spec = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-    a_f, g_l, m_s, t_z, spec = {}, {}, {}, {}, {}
-    #splitting indices
-    for key, val in dict.items():
-        if key[0] >= 'a' and key[0] <= 'f':
-            a_f[key] = val
-        elif key[0] >= 'g' and key[0] <= 'l':
-            g_l[key] = val
-        elif key[0] >= 'm' and key[0] <= 's':
-            m_s[key] = val
-        elif key[0] >= 't' and key[0] <= 'z':
-            t_z[key] = val
-        else:
-            spec[key] = val
-
-    return a_f, g_l, m_s, t_z, spec
-
-def sortAndWriteToDisk(partial_index, filename):
-    filename = f"{filename}.json"
-    # for key in partial_index:
-    #     partial_index[key].sort()
-
-    with open(filename, 'w') as json_file:
-        json.dump(partial_index, json_file, cls=Js)'''
 
 def findTokenPos(indexName):
     pos = 0

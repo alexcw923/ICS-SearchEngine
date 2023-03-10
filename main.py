@@ -1,17 +1,8 @@
-import os, json, sys, time
-from glob import glob
-from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize
-from bs4 import BeautifulSoup
-from pathlib import Path
-from collections import defaultdict
-from json.decoder import JSONDecodeError
-from matrix import InstanceMatrix
+import time
 import argparse
 
 from build import build
 from search import search
-from posting import JSONDecoder, JSONEncoder
 '''
 def checkToken(token):
     for c in token:
