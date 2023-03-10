@@ -11,7 +11,7 @@ import argparse
 
 from build import build
 from search import search
-
+from posting import JSONDecoder, JSONEncoder
 '''
 def checkToken(token):
     for c in token:
@@ -114,6 +114,7 @@ def writeReport(files, file_names):
 '''
 
 if __name__ == "__main__":
+    
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
@@ -129,5 +130,13 @@ if __name__ == "__main__":
     parser_search.set_defaults(func=search)
 
     args = parser.parse_args()
+    start = time.time()
     args.func(args)
-
+    end = time.time()
+    print('Time', (end-start))
+    
+    # for i in ['a_f', 'g_l', 'm_s', 't_z', 'spec']:
+    #     with open (f"{i}.json", 'r+') as file:
+    #         index = json.load(file, cls=JSONDecoder)
+    #         sorted_index = dict(sorted(index.items()))
+    #         json.dump(sorted_index, file, cls=JSONEncoder)

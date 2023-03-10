@@ -74,16 +74,11 @@ def build(args):
         with open("mapping.json", 'w+') as mappings:
             #print(mapped_files)
             json.dump(mapped_files, mappings)
-        # with open("invertedIndex.json", 'w+') as index:
-        #     #print(inverted_index)
-        #     json.dump(partial_index, index, cls=PostingEncoder, indent=2)
-
     
-    # with open("mapping.json", 'w') as mappings:
-    #     json.dump(mapped_files, mappings)
-    # with open("invertedIndex.json", 'w') as index:
-    #     json.dump(inverted_index, index, indent=4)
-    # writeM1(inverted_index, n)
+    with open("mapping.json", 'w+') as mappings:
+            #print(mapped_files)
+            json.dump(mapped_files, mappings)
+   
 
 
 def indexing(stem : list) -> dict:
@@ -138,7 +133,7 @@ def sortAndWriteToDisk(partial_index, fn):
             old_index[token] = postList
 
     with open(f"{fn}.json", 'w') as new_file:
-        json.dump( old_index, new_file, cls=PostingEncoder)
+        json.dump( old_index, new_file, cls=PostingEncoder, sort_keys=True)
 
 
 '''
@@ -169,3 +164,16 @@ def sortAndWriteToDisk(partial_index, filename):
 
     with open(filename, 'w') as json_file:
         json.dump(partial_index, json_file, cls=Js)'''
+
+def findTokenPos(indexName):
+    pos = 0
+    posDict = {}
+
+    with open(f"{indexName}.json", 'r') as file:
+        for line in file:
+            token,posting = line.strip().split(":")
+            posDict[token] = pos
+            pos += len(token)
+            pos += len(posting)
+            pos += 2
+        
