@@ -134,7 +134,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     start = time.time()
+
+    import cProfile, pstats
+    profiler = cProfile.Profile()
+    profiler.enable()
     args.func(args)
+    profiler.disable()
+    stats = pstats.Stats(profiler).sort_stats('cumtime')
+    stats.print_stats()
     end = time.time()
     print('Time', (end-start))
     
