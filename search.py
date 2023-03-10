@@ -22,10 +22,10 @@ def print_search_results(queries, search_results):
                 urls.append(data[str(j)])
 
         stats.append(urls)
-
+    
     for i in range(len(search_results)):
         print(f'Search results for "{queries[i]}"')
-        for result_number, j in enumerate(range(min(NUM_SEARCH_RESULTS, len(search_results))), 1):
+        for result_number, j in enumerate(range(min(NUM_SEARCH_RESULTS, len(search_results[i]))), 1):
             print(f"{result_number}. {stats[i][j]}")
         print()
 
@@ -78,7 +78,7 @@ def get_search_results(queries: list):
                     d = "{" + '"' + str(tok) + '":'+ posting +"}"
 
                     dumping = json.loads(d, cls=PostingDecoder)
-                    print(dumping)
+                    #print(dumping)
                     for token, postList in dumping.items():
                         newIndex[token] = postList
 
