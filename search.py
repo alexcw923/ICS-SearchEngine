@@ -29,6 +29,10 @@ def _preload_positional_json():
 def preload():
     return (_preload_mapping(), _preload_positional_json())
 
+# FIXME: possible performance hit from opening and closing
+def get_url_from_docid(mapping, doc_id):
+    return mapping[str(doc_id)]
+
 def print_search_results(mapping, queries, search_results):
     assert len(queries) == len(search_results)
     stats = []
