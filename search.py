@@ -29,7 +29,7 @@ def _preload_positional_json():
 def preload():
     return (_preload_mapping(), _preload_positional_json())
 
-def print_search_results(queries, search_results):
+def print_search_results(mapping, queries, search_results):
     assert len(queries) == len(search_results)
     stats = []
     # Printing NUM_SEARCH_RESULTS for each query
@@ -37,12 +37,10 @@ def print_search_results(queries, search_results):
         urls = []
 
         for j in i[0:NUM_SEARCH_RESULTS]:
-            with open('mapping.json') as file:
-                data = json.load(file)
-                urls.append(data[str(j[1])])
+            urls.append(mapping[str(j[1])])
 
         stats.append(urls)
-    
+
     for i in range(len(search_results)):
         print(f'Search results for "{queries[i]}"')
         for result_number, j in enumerate(range(min(NUM_SEARCH_RESULTS, len(search_results[i]))), 1):
@@ -52,13 +50,18 @@ def print_search_results(queries, search_results):
 
 
 def search(args):
-    queries = args.query.split(QUERY_SEP)
-    search_results = get_search_results(queries)
-    print_search_results(queries, search_results)
-    
+    running = True
+    mapping, positional_indexes = preload()
+
+    while running:
+        query = input("Search: ")
+        queries = [query]
+
+        search_results = get_search_results(positional_indexes, queries)
+        print_search_results(mapping, queries, search_results)
 
 
-def get_search_results(queries: list):
+def get_search_results(positional_index: dict, queries: list):
     docs = []
 
     newIndex = {}
@@ -82,40 +85,33 @@ def get_search_results(queries: list):
             else:
                 to_open = FILE_ALPH[4]
 
-            with open(f"{to_open}_pos.json", 'rb') as posFile:
-                
-                posIndex = json.load(posFile)
-                #json_string = mmap.mmap(posFile.fileno(), 0, access=mmap.ACCESS_READ)
-                #getting possistion of toke
-                #json_string = json_string.read().decode('utf-8')
-                #posIndex = json.loads(json_string)
-                try:
-                    pos = posIndex[tok]
-                except KeyError:
-                    no_search_result.append(tok)
-                    continue
-                with open(f"{to_open}.json", 'r+b') as f:
-                    mapped_file = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
-                    mapped_file.seek(pos)
-                    #f.seek(pos)
-                    posting = mapped_file.readline().decode("utf-8").strip()
-                    posting = posting[:posting.find(']')+1]
+            try:
+                pos = positional_index[to_open][tok]
+            except KeyError:
+                no_search_result.append(tok)
+                continue
+            with open(f"{to_open}.json", 'r+b') as f:
+                mapped_file = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+                mapped_file.seek(pos)
+                #f.seek(pos)
+                posting = mapped_file.readline().decode("utf-8").strip()
+                posting = posting[:posting.find(']')+1]
 
-                    d = "{" + '"' + posting +"}"
+                d = "{" + '"' + posting +"}"
 
-                    #d = '{{"{}": {}}}'.format(tok, posting)
-                    dumping = json.loads(d, cls=PostingDecoder)
-                    
-                    for token, postList in dumping.items():
-                        newIndex[token] = postList
-                    
+                #d = '{{"{}": {}}}'.format(tok, posting)
+                dumping = json.loads(d, cls=PostingDecoder)
+
+                for token, postList in dumping.items():
+                    newIndex[token] = postList
+
     tfidf = TFIDFSearch(newIndex)
     for q in queries:
         tokenized = word_tokenize(q)
         #make sure tokens are lowercase
         stemmed = [ps.stem(token.lower()) for token in tokenized if not token.isnumeric()]
         docs.append(tfidf.search(stemmed))
-    
+
     if len(no_search_result) != 0:
         print("No Search Result for the query: ", end='')
         for q in no_search_result:
