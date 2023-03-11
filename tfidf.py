@@ -41,7 +41,7 @@ class TFIDFSearch:
                 continue
         scores = []
         for docID, tfidf in self.scores.items():
-            similarity = self.cosine_similarity(query_tfidf, tfidf)
+            similarity = sum(tfidf.values())
             scores.append((similarity, docID))
         scores.sort(reverse=True)
         return scores
