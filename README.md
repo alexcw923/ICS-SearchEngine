@@ -1,5 +1,7 @@
-# Milestones-CS-121-
-BUILDING INDEX:
+#How to Use:
+
+###Building Index:
+
 In order to build the inverted index for our corpus you will need to run this following command:
 ```
 python main.py build
@@ -7,7 +9,8 @@ python main.py build
 This will take a decent amount of time to run.
 
 
-SEARCHING IN CONSOLE:
+###Searching with Console:
+
 To search after you built the inverted index use this following command:
 ```
 python main.py search ""
@@ -19,7 +22,8 @@ Search machine learning
 Upon pressing enter the console will display the top 5 urls from the query
 
 
-SEARCHING IN GUI:
+###Searching with GUI:
+
 To search after you built the inverted index on a GUI use this following command:
 ```
 python searchPage.py
