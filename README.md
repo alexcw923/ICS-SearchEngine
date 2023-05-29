@@ -5,15 +5,10 @@
 
   <h3 align="center">ICS Search Engine</h3>
 
-  <p align="center">
-    The ICS Search Engine provides convenient search and retrieval of information from the ICS (Information and Computer Sciences) Department Webpages in the University of   California, Irvine. Developed as a project within the ICS web databases course, this search engine enables users to explore and navigate through a vast collection of webpages related to the field of computer science.
-    <br />
-    <a href="https://github.com/alexcw923/ICS-SearchEngine"><strong>Explore the docs »</strong></a>
-    <br />
-    
-  </p>
+  
 </div>
 
+The ICS Search Engine provides convenient search and retrieval of information from the ICS (Information and Computer Sciences) Department Webpages at University of   California, Irvine. This search engine enables users to explore a vast collection of webpages within the ICS department, using algorithms such as TF-IDF scoring and PageRank algorithm to improve users' searching experience. 
 
 ## Getting Started
 
